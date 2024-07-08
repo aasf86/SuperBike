@@ -1,6 +1,7 @@
 ﻿
 
 # Dentro do diretório: SuperBike\src\SuperBike.Auth
+## Commands para criar a migração e criar as tabelas do asp.net.identity
 
 ```cmd
 

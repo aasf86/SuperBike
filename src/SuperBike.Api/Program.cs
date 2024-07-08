@@ -1,5 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using SuperBike.Auth.Context;
+using Microsoft.AspNetCore.Localization;
+using SuperBike.Auth.Config;
+using SuperBike.Business.Contracts.UseCases.User;
+using SuperBike.Business.UseCases.User;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +13,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AuthIdentityDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"), o => o.SetPostgresVersion(12, 0))
-);
+//Gestão de autenticação e autorização do super bike
+builder.AddAuthSuperBike();
+
+//Injeção de dependências
+builder.Services.AddScoped<IUserUseCase, UserUseCase>();
+
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
