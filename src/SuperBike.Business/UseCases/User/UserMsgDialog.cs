@@ -1,6 +1,6 @@
 ﻿namespace SuperBike.Business.UseCases.User
 {
-    public static class UserInserMsgDialog
+    public static class UserMsgDialog
     {
         public const string RequiredPassword = "Informe sua senha.";
         public const string InvalidEmail = "Informe um Email/Login válido.";

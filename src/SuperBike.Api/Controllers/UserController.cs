@@ -13,29 +13,13 @@ namespace SuperBike.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserUseCase _userUseCase;
-        public IUserUseCase UserUseCase => _userUseCase;
+        private IUserUseCase UserUseCase => _userUseCase;
 
-        public UserController(IUserUseCase userUseCase)
-        {
-            _userUseCase = userUseCase;
-        }
-        // GET: api/<UserController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<UserController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
+        public UserController(IUserUseCase userUseCase) => _userUseCase = userUseCase;
+        
         // POST api/<UserController>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] UserInsert user)
+        public async Task<IActionResult> Insert([FromBody] UserInsert user)
         {
             if (ModelState.IsValid)
             {
@@ -43,9 +27,12 @@ namespace SuperBike.Api.Controllers
                 userInsertRequest.From = "host:api";
                 userInsertRequest.Version = "1.0";
                 var userInsertResponse = await UserUseCase.Insert(userInsertRequest);
-
+                
                 if (userInsertResponse.IsSuccess)                
                     return Ok(userInsertResponse);
+
+                if (userInsertResponse.Exception != null)                
+                    return StatusCode(503, userInsertResponse);
 
                 return BadRequest(userInsertResponse);
             }
@@ -54,15 +41,10 @@ namespace SuperBike.Api.Controllers
         }
 
         // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPost("Login")]
+        public void Login([FromBody] UserInsert user)
         {
-        }
 
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

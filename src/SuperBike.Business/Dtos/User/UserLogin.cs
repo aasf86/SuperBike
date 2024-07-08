@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SuperBike.Business.Dtos.User
 {
-    public class UserInsert
+    public class UserLogin
     {
         [Required(ErrorMessage = UserMsgDialog.RequiredLoginEmail)]
         [EmailAddress(ErrorMessage = UserMsgDialog.InvalidEmail)]
@@ -12,9 +12,5 @@ namespace SuperBike.Business.Dtos.User
         [MinLength(6, ErrorMessage = UserMsgDialog.MinimalPassword)]
         [Required(ErrorMessage = UserMsgDialog.RequiredPassword)]
         public string Password { get; set; } = "";
-
-        [MinLength(6, ErrorMessage = UserMsgDialog.MinimalPassword)]
-        [Required(ErrorMessage = UserMsgDialog.RequiredPassword2)]
-        public string Password2 { get; set; } = "";
     }
 }
