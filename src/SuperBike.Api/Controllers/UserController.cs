@@ -42,9 +42,25 @@ namespace SuperBike.Api.Controllers
 
         // PUT api/<UserController>/5
         [HttpPost("Login")]
-        public void Login([FromBody] UserInsert user)
+        public async Task<IActionResult> Login([FromBody] UserLogin user)
         {
+            if (ModelState.IsValid)
+            {
+                var userLoginRequest = new UserLoginRequest(user);
+                userLoginRequest.From = "host:api";
+                userLoginRequest.Version = "1.0";
+                var userLoginResponse = await UserUseCase.Login(userLoginRequest);
 
+                if (userLoginResponse.IsSuccess)
+                    return Ok(userLoginResponse);
+
+                if (userLoginResponse.Exception != null)
+                    return StatusCode(503, userLoginResponse);
+
+                return BadRequest(userLoginResponse);
+            }
+
+            return BadRequest();
         }
     }
 }

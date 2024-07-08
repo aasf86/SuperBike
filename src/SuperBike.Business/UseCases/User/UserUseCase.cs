@@ -3,8 +3,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SuperBike.Auth.Config;
 using SuperBike.Business.Contracts.UseCases.User;
+using SuperBike.Business.Dtos.User;
 using SuperBike.Business.Dtos.User.Request;
 using SuperBike.Business.Dtos.User.Response;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace SuperBike.Business.UseCases.User
 {
@@ -18,18 +22,16 @@ namespace SuperBike.Business.UseCases.User
         private SignInManager<IdentityUser> SignInManager => _signInManager;
         private UserManager<IdentityUser> UserManager => _userManager;
         private JwtOptions JwtOptions => _jwtOptions;
-        private ILogger<UserUseCase> Logger => _logger;
 
         public UserUseCase(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
-            IOptions<JwtOptions> jwtOptions,
+            IOptions<JwtOptions> jwtOptions,            
             ILogger<UserUseCase> logger) : base(logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
-            _logger = logger;
         }
 
         public async Task<UserInsertResponse> Insert(UserInsertRequest userInsertRequest)
@@ -86,8 +88,24 @@ namespace SuperBike.Business.UseCases.User
             {
                 "Iniciando 'login' de usuário: {LoginUserName}".LogInf(userLoginRequest.Data.LoginUserName);
 
-                var userLoginResponse = new UserLoginResponse(userLoginRequest.Data);
+                var user = userLoginRequest.Data;
+                var userLoginResponse = new UserLoginResponse(new UserLogin { LoginUserName = user.LoginUserName });
 
+                var result = await _signInManager.PasswordSignInAsync(user.LoginUserName, user.Password, false, true);
+                if (result.Succeeded)
+                    return await GenerateToken(user.LoginUserName);
+
+                if (!result.Succeeded)
+                {
+                    if (result.IsLockedOut)
+                        userLoginResponse.Errors.Add(UserMsgDialog.IsLockedOut);
+                    else if (result.IsNotAllowed)
+                        userLoginResponse.Errors.Add(UserMsgDialog.IsNotAllowed);
+                    else if (result.RequiresTwoFactor)
+                        userLoginResponse.Errors.Add(UserMsgDialog.RequiresTwoFactor);
+                    else
+                        userLoginResponse.Errors.Add(UserMsgDialog.IncorrectPassword);
+                }
 
                 return userLoginResponse;
             }
@@ -101,6 +119,56 @@ namespace SuperBike.Business.UseCases.User
                 userLoginResponse.Exception = exc;
                 return userLoginResponse;
             }
+        }
+
+        private async Task<UserLoginResponse> GenerateToken(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            var accessTokenClaims = await GetLocalClaims(user);
+
+            var expirationAccessToken = DateTime.Now.AddSeconds(_jwtOptions.AccessTokenExpiration);
+
+            var accessToken = StrToken(accessTokenClaims, expirationAccessToken);            
+
+            return new UserLoginResponse
+            (
+                new UserLogin { LoginUserName = email },
+                accessToken                
+            );
+        }
+
+        private async Task<IList<Claim>> GetLocalClaims(IdentityUser user)
+        {
+            var claims = new List<Claim>();
+
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, DateTime.Now.ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()));
+
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            claims.AddRange(userClaims);
+
+            foreach (var role in roles)
+                claims.Add(new Claim("role", role));
+
+            return claims;
+        }
+
+        private string StrToken(IEnumerable<Claim> claims, DateTime dataExpiracao)
+        {
+            var jwt = new JwtSecurityToken(
+                issuer: _jwtOptions.Issuer,
+                audience: _jwtOptions.Audience,
+                claims: claims,
+                notBefore: DateTime.Now,
+                expires: dataExpiracao,
+                signingCredentials: _jwtOptions.SigningCredentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace SuperBike.Business.Dtos.User
         public string Password { get; set; } = "";
 
         [MinLength(6, ErrorMessage = UserMsgDialog.MinimalPassword)]
-        [Required(ErrorMessage = UserMsgDialog.RequiredPassword2)]
-        public string Password2 { get; set; } = "";
+        [Required(ErrorMessage = UserMsgDialog.RequiredPasswordConfirmed)]
+        public string PasswordConfirmed { get; set; } = "";
     }
 }
