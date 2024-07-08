@@ -160,15 +160,18 @@ namespace SuperBike.Business.UseCases.User
 
         private string StrToken(IEnumerable<Claim> claims, DateTime dataExpiracao)
         {
-            var jwt = new JwtSecurityToken(
-                issuer: _jwtOptions.Issuer,
-                audience: _jwtOptions.Audience,
-                claims: claims,
-                notBefore: DateTime.Now,
-                expires: dataExpiracao,
-                signingCredentials: _jwtOptions.SigningCredentials);
+            var strTokenNew = new JwtSecurityTokenHandler()
+                .CreateEncodedJwt(
+                    _jwtOptions.Issuer,
+                    _jwtOptions.Audience,
+                    new ClaimsIdentity(claims),
+                    DateTime.Now,
+                    dataExpiracao,
+                    DateTime.Now,
+                    _jwtOptions.SigningCredentials
+                );
 
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
+            return strTokenNew;
         }
     }
 }

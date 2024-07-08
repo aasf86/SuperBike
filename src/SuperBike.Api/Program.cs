@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Localization;
 using Serilog;
+using SuperBike.Api.Config;
 using SuperBike.Auth.Config;
 using SuperBike.Business.Contracts.UseCases.User;
 using SuperBike.Business.UseCases.User;
@@ -14,7 +15,7 @@ builder.Host.UseSerilog();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGenSuperBike();
 
 //Gestão de autenticação e autorização do super bike
 builder.AddAuthSuperBike();
@@ -38,9 +39,9 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-{
+{    
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI();    
 }
 
 app.UseHttpsRedirection();
