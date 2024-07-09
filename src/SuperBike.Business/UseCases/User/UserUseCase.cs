@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SuperBike.Auth.Business;
 using SuperBike.Auth.Config;
 using SuperBike.Business.Contracts.UseCases.User;
 using SuperBike.Business.Dtos.User;
@@ -15,21 +16,25 @@ namespace SuperBike.Business.UseCases.User
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JwtOptions _jwtOptions;        
 
         private SignInManager<IdentityUser> SignInManager => _signInManager;
         private UserManager<IdentityUser> UserManager => _userManager;
+        private RoleManager<IdentityRole> RoleManager => _roleManager;
         private JwtOptions JwtOptions => _jwtOptions;
 
         public UserUseCase(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             IOptions<JwtOptions> jwtOptions,            
             ILogger<UserUseCase> logger) : base(logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
+            _roleManager = roleManager;
         }
 
         public async Task<UserInsertResponse> Insert(UserInsertRequest userInsertRequest)
@@ -38,13 +43,16 @@ namespace SuperBike.Business.UseCases.User
             {
                 "Iniciando [insert] de usuário: {LoginUserName}".LogInf(userInsertRequest.Data.LoginUserName);
 
+                var user = userInsertRequest.Data;
+                var userInsertResponse = new UserInsertResponse(user);
                 var result = Validate(userInsertRequest.Data);
 
                 if (!result.IsSuccess)
-                    return new UserInsertResponse(userInsertRequest.Data, result.Validation.Select(x => x.ErrorMessage).ToList());
-
-                var user = userInsertRequest.Data;
-
+                {
+                    userInsertResponse.Errors.AddRange(result.Validation.Select(x => x.ErrorMessage).ToList());
+                    return userInsertResponse;
+                }
+                
                 var identityUser = new IdentityUser
                 {
                     UserName = user.LoginUserName,
@@ -54,12 +62,22 @@ namespace SuperBike.Business.UseCases.User
 
                 var resultCreate = await UserManager.CreateAsync(identityUser, user.Password);
 
-                if (resultCreate.Succeeded)                
-                    await _userManager.SetLockoutEnabledAsync(identityUser, false);
-                
-                var userInsertResponse = new UserInsertResponse(user);
+                if (resultCreate.Succeeded)
+                {
+                    await UserManager.SetLockoutEnabledAsync(identityUser, false);                    
 
-                if (!resultCreate.Succeeded && resultCreate.Errors.Count() > 0)
+                    var resultAddUserRole = await UserManager.AddToRoleAsync(identityUser, RoleTypeSuperBike.Deliveryman);
+
+                    if (!resultAddUserRole.Succeeded)
+                    {
+                        userInsertResponse.Errors.AddRange(resultAddUserRole.Errors.Select(r => r.Description));
+                        var errors = string.Join("\n", userInsertResponse.Errors.ToArray());
+                        $"Removendo usuário por falta de perfil: {RoleTypeSuperBike.Deliveryman}".LogWrn();
+                        await UserManager.DeleteAsync(identityUser);
+                        $"Validações do Identity {{LoginUserName}} Erros: {errors}".LogWrn(user.LoginUserName);
+                    }
+                }
+                else
                 {
                     userInsertResponse.Errors.AddRange(resultCreate.Errors.Select(r => r.Description));
                     var errors = string.Join("\n", userInsertResponse.Errors.ToArray());
@@ -74,8 +92,7 @@ namespace SuperBike.Business.UseCases.User
                 exc.Message.LogErr(exc);
 
                 var userInsertResponse = new UserInsertResponse(userInsertRequest.Data);
-                userInsertResponse.Errors.Add(exc.Message);
-                userInsertResponse.Exception = exc;
+                userInsertResponse.Errors.Add(exc.Message);                
                 return userInsertResponse;
             }
         }
@@ -89,7 +106,7 @@ namespace SuperBike.Business.UseCases.User
                 var user = userLoginRequest.Data;
                 var userLoginResponse = new UserLoginResponse(new UserLogin { LoginUserName = user.LoginUserName });
 
-                var result = await _signInManager.PasswordSignInAsync(user.LoginUserName, user.Password, false, true);
+                var result = await SignInManager.PasswordSignInAsync(user.LoginUserName, user.Password, false, true);
                 if (result.Succeeded)
                     return await GenerateToken(user.LoginUserName);
 
@@ -113,18 +130,17 @@ namespace SuperBike.Business.UseCases.User
                 exc.Message.LogErr(exc);
 
                 var userLoginResponse = new UserLoginResponse(userLoginRequest.Data);
-                userLoginResponse.Errors.Add(exc.Message);
-                userLoginResponse.Exception = exc;
+                userLoginResponse.Errors.Add(exc.Message);                
                 return userLoginResponse;
             }
         }
 
         private async Task<UserLoginResponse> GenerateToken(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await UserManager.FindByEmailAsync(email);
             var accessTokenClaims = await GetLocalClaims(user);
 
-            var expirationAccessToken = DateTime.Now.AddSeconds(_jwtOptions.AccessTokenExpiration);
+            var expirationAccessToken = DateTime.Now.AddSeconds(JwtOptions.AccessTokenExpiration);
 
             var accessToken = StrToken(accessTokenClaims, expirationAccessToken);            
 
@@ -145,8 +161,8 @@ namespace SuperBike.Business.UseCases.User
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, DateTime.Now.ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()));
 
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var roles = await _userManager.GetRolesAsync(user);
+            var userClaims = await UserManager.GetClaimsAsync(user);
+            var roles = await UserManager.GetRolesAsync(user);
 
             claims.AddRange(userClaims);
 
@@ -160,13 +176,13 @@ namespace SuperBike.Business.UseCases.User
         {
             var strTokenNew = new JwtSecurityTokenHandler()
                 .CreateEncodedJwt(
-                    _jwtOptions.Issuer,
-                    _jwtOptions.Audience,
+                    JwtOptions.Issuer,
+                    JwtOptions.Audience,
                     new ClaimsIdentity(claims),
                     DateTime.Now,
                     dataExpiracao,
                     DateTime.Now,
-                    _jwtOptions.SigningCredentials
+                    JwtOptions.SigningCredentials
                 );
 
             return strTokenNew;

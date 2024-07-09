@@ -65,11 +65,11 @@ namespace SuperBike.Auth.Config
             builder.Services.AddDbContext<AuthIdentityDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("Default"), o => o.SetPostgresVersion(12, 0))
             );
-
+            
             builder.Services.AddDefaultIdentity<IdentityUser>()
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<AuthIdentityDbContext>()
-                .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<AuthIdentityDbContext>()                
+                .AddDefaultTokenProviders();            
         }
     }
 }

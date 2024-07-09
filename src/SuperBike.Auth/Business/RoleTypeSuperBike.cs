@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuperBike.Auth.Business
 {
-    public static class Role
+    public static class RoleTypeSuperBike
     {
         public const string Admin = nameof(Admin);
         public const string Deliveryman = nameof(Deliveryman);

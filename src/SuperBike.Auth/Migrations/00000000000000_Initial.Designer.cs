@@ -12,7 +12,7 @@ using SuperBike.Auth.Context;
 namespace SuperBike.Auth.Migrations
 {
     [DbContext(typeof(AuthIdentityDbContext))]
-    [Migration("20240705191342_Initial")]
+    [Migration("00000000000000_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

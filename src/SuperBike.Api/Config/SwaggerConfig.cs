@@ -12,10 +12,11 @@ namespace SuperBike.Api.Config
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
+                /*
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
-
+                */
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = @"Cabeçalho de autorização JWT usando o esquema Bearer. 
