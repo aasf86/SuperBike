@@ -6,7 +6,6 @@ using SuperBike.Business.Contracts.UseCases.User;
 using SuperBike.Business.Dtos.User;
 using SuperBike.Business.Dtos.User.Request;
 using SuperBike.Business.Dtos.User.Response;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -65,7 +64,7 @@ namespace SuperBike.Business.UseCases.User
                 {
                     userInsertResponse.Errors.AddRange(resultCreate.Errors.Select(r => r.Description));
                     var errors = string.Join("\n", userInsertResponse.Errors.ToArray());
-                    $"Validações do Identity Erros: {errors}".LogWrn();
+                    $"Validações do Identity {{LoginUserName}} Erros: {errors}".LogWrn(user.LoginUserName);
                 }
 
                 return userInsertResponse;

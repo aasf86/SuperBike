@@ -2,7 +2,6 @@
 using SuperBike.Business.Contracts.UseCases.User;
 using SuperBike.Business.Dtos.User;
 using SuperBike.Business.Dtos.User.Request;
-using SuperBike.Business.Dtos.User.Response;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

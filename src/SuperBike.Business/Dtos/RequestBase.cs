@@ -1,6 +1,4 @@
-﻿using SuperBike.Business.Dtos.User;
-
-namespace SuperBike.Business.Dtos
+﻿namespace SuperBike.Business.Dtos
 {
     public class RequestBase<T>
     {

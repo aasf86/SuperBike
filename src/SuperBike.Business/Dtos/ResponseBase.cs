@@ -1,7 +1,4 @@
-﻿using SuperBike.Business.Dtos.User;
-using System.Runtime.Serialization;
-
-namespace SuperBike.Business.Dtos
+﻿namespace SuperBike.Business.Dtos
 {
     public class ResponseBase<T>
     {
