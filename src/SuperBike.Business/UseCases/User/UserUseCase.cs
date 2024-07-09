@@ -15,8 +15,7 @@ namespace SuperBike.Business.UseCases.User
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly JwtOptions _jwtOptions;
-        private readonly ILogger<UserUseCase> _logger;
+        private readonly JwtOptions _jwtOptions;        
 
         private SignInManager<IdentityUser> SignInManager => _signInManager;
         private UserManager<IdentityUser> UserManager => _userManager;
