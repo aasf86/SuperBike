@@ -18,6 +18,11 @@ namespace SuperBike.Api.Controllers
         public UserController(IUserUseCase userUseCase) => _userUseCase = userUseCase;
 
         // POST api/<UserController>
+        /// <summary>
+        /// "Inserir um novo usuário locador."
+        /// </summary>
+        /// <param name="user"> parametro user</param>
+        /// <returns> retorno aqui</returns>        
         [HttpPost]
         public async Task<IActionResult> Insert([FromBody] UserInsert user)
         {
@@ -38,6 +43,11 @@ namespace SuperBike.Api.Controllers
         }
 
         // PUT api/<UserController>/5
+        /// <summary>
+        /// "Login para obtenção de token para usuários 'locador' e 'admin'."
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>        
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserLogin user)
         {

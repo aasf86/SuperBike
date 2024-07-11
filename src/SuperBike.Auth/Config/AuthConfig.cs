@@ -16,15 +16,15 @@ namespace SuperBike.Auth.Config
         {
             var jwtOptions = builder.Configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
 
-            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtOptions.SecurityKey));
+            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtOptions?.SecurityKey ?? ""));
 
             builder.Services.Configure<JwtOptions>(op => 
             {
-                op.Issuer = jwtOptions.Issuer;
-                op.Audience = jwtOptions.Audience;                
-                op.AccessTokenExpiration = jwtOptions.AccessTokenExpiration;
+                op.Issuer = jwtOptions?.Issuer;
+                op.Audience = jwtOptions?.Audience;                
+                op.AccessTokenExpiration = jwtOptions?.AccessTokenExpiration ?? 3600;
                 op.SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512);
-                op.SecurityKey = jwtOptions.SecurityKey;
+                op.SecurityKey = jwtOptions?.SecurityKey;
             });
 
             var identityOptions = builder.Configuration.GetSection(nameof(IdentityOptions)).Get<IdentityOptions>();
@@ -47,10 +47,10 @@ namespace SuperBike.Auth.Config
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = jwtOptions.Issuer,
+                    ValidIssuer = jwtOptions?.Issuer,
 
                     ValidateAudience = true,
-                    ValidAudience = jwtOptions.Audience,
+                    ValidAudience = jwtOptions?.Audience,
 
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = securityKey,

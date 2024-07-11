@@ -1,6 +1,8 @@
-﻿namespace SuperBike.Business.Dtos
+﻿using DomainUseCase = SuperBike.Domain.Contracts.UseCases;
+
+namespace SuperBike.Business.Dtos
 {
-    public class ResponseBase<T>
+    public class ResponseBase<T> : DomainUseCase.ResponseBase<T>
     {
         public ResponseBase(T data)
         {

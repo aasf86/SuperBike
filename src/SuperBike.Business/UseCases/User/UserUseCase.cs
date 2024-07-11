@@ -17,7 +17,7 @@ namespace SuperBike.Business.UseCases.User
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly JwtOptions _jwtOptions;        
+        private readonly JwtOptions _jwtOptions;
 
         private SignInManager<IdentityUser> SignInManager => _signInManager;
         private UserManager<IdentityUser> UserManager => _userManager;
@@ -45,11 +45,13 @@ namespace SuperBike.Business.UseCases.User
 
                 var user = userInsertRequest.Data;
                 var userInsertResponse = new UserInsertResponse(user);
-                var result = Validate(userInsertRequest.Data);
+                var result = Validate(user);
 
                 if (!result.IsSuccess)
                 {
-                    userInsertResponse.Errors.AddRange(result.Validation.Select(x => x.ErrorMessage).ToList());
+                    userInsertResponse.Errors.AddRange(result.Validation.Select(x => x.ErrorMessage).ToList());                    
+                    var errors = string.Join("\n", userInsertResponse.Errors.ToArray());
+                    $"Usuário inválido '{{LoginUserName}}': {errors} ".LogWrn(user.LoginUserName);
                     return userInsertResponse;
                 }
                 
@@ -138,7 +140,7 @@ namespace SuperBike.Business.UseCases.User
         private async Task<UserLoginResponse> GenerateToken(string email)
         {
             var user = await UserManager.FindByEmailAsync(email);
-            var accessTokenClaims = await GetLocalClaims(user);
+            var accessTokenClaims = await GetLocalClaims(user ?? new IdentityUser());
 
             var expirationAccessToken = DateTime.Now.AddSeconds(JwtOptions.AccessTokenExpiration);
 
@@ -156,7 +158,7 @@ namespace SuperBike.Business.UseCases.User
             var claims = new List<Claim>();
 
             claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, (user.Email ?? "")));
             claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, DateTime.Now.ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()));

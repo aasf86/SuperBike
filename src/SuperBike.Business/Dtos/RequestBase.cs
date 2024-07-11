@@ -1,6 +1,8 @@
-﻿namespace SuperBike.Business.Dtos
+﻿using SuperBike.Domain.Contracts.UseCases;
+
+namespace SuperBike.Business.Dtos
 {
-    public class RequestBase<T>
+    public class RequestBase<T> : Domain.Contracts.UseCases.RequestBase<T>
     {
         public RequestBase(T data)
         {
