@@ -5,8 +5,9 @@ namespace SuperBike.Business.Dtos.Motorcycle
 {
     public class MotorcycleUpdate
     {
-        [MinLength(MotorcycleRole.PlateMinimalLenth, ErrorMessage = MotorcycleMsgDialog.RequiredPlate)]
         [Required(ErrorMessage = MotorcycleMsgDialog.RequiredPlate)]
-        public string Plate { get; private set; } = "";
+        [MaxLength(MotorcycleRole.PlateMaxLenth, ErrorMessage = MotorcycleMsgDialog.InvalidPlate)]
+        [MinLength(MotorcycleRole.PlateMinimalLenth, ErrorMessage = MotorcycleMsgDialog.InvalidPlate)]
+        public string Plate { get; set; } = "";
     }
 }

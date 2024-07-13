@@ -1,12 +1,5 @@
-﻿using Microsoft.VisualBasic;
-using SuperBike.Infrastructure.Contracts;
-using System;
-using System.Collections.Generic;
+﻿using SuperBike.Infrastructure.Contracts;
 using System.Data;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuperBike.Infrastructure
 {

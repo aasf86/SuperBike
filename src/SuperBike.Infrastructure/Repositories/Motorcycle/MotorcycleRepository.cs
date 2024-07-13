@@ -1,7 +1,9 @@
-﻿using SuperBike.Domain.Contracts.Repositories.Motorcycle;
+﻿using Dapper;
+using SuperBike.Domain.Contracts.Repositories.Motorcycle;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,11 +13,15 @@ namespace SuperBike.Infrastructure.Repositories.Motorcycle
 {
     public class MotorcycleRepository : RepositoryBase<Entity.Motorcycle>, IMotorcycleRepository
     {
-        //public MotorcycleRepository(IDbTransaction? transaction = null) : base(transaction) { }
-
-        public Task<Entity.Motorcycle> GetByPlate(string plate)
+        public async Task<Entity.Motorcycle?> GetByPlate(string plate)
         {
-            throw new NotImplementedException();
+            var sql = $@"
+                select * 
+                from {nameof(Entity.Motorcycle)} 
+                where plate = @plate
+            ";
+
+            return await DbTransaction.Connection.QuerySingleOrDefaultAsync<Entity.Motorcycle>(sql, new { plate });            
         }
     }
 }

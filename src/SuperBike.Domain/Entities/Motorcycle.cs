@@ -33,6 +33,7 @@
             public const string RequiredPlate = "Informe a placa da motocicleta.";
             public const string InvalidModel = "Informe o modelo até 100 caracteres.";
             public const string InvalidPlate = "Informe a placa com 7 caracteres.";
+            public const string AlreadyRegistered = "Motocycleta já cadastrada para o modelo {0}.";
         }
     }
 }

@@ -1,9 +1,17 @@
-﻿using System.Dynamic;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Dynamic;
+using static SuperBike.Domain.Entities.Motorcycle;
 
 namespace SuperBike.Business.Dtos.Motorcycle
 {
     public class MotorcycleGet
-    {
-        public dynamic Filter { get; private set; } = new ExpandoObject();
+    {        
+        [Required(ErrorMessage = MotorcycleMsgDialog.RequiredPlate)]
+        [MaxLength(MotorcycleRole.PlateMaxLenth, ErrorMessage = MotorcycleMsgDialog.InvalidPlate)]
+        [MinLength(MotorcycleRole.PlateMinimalLenth, ErrorMessage = MotorcycleMsgDialog.InvalidPlate)]
+        public string Plate { get; set; } = "";
+        public string Model { get; set; } = "";
+        public int Year { get; set; }
+        public int Id { get; set; }
     }
 }

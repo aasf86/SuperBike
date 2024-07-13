@@ -3,7 +3,7 @@ using SuperBike.Business.Dtos.User.Response;
 
 namespace SuperBike.Business.Contracts.UseCases.User
 {
-    public interface IUserUseCase
+    public interface IUserUseCase : IValidators
     {
         Task<UserInsertResponse> Insert(UserInsertRequest request);
         Task<UserLoginResponse> Login(UserLoginRequest request);

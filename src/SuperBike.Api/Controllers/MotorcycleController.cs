@@ -4,6 +4,7 @@ using SuperBike.Auth.Business;
 using SuperBike.Business.Contracts.UseCases.Motorcycle;
 using SuperBike.Business.Dtos.Motorcycle;
 using SuperBike.Business.Dtos.Motorcycle.Request;
+using SuperBike.Business.UseCases.Motorcycle;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,16 +28,11 @@ namespace SuperBike.Api.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<GoController>/5        
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
         */
+
         // POST api/<GoController>
         /// <summary>
-        /// 
+        /// Inserir nova motocicleta.
         /// </summary>
         /// <param name="motorcycle"></param>
         /// <returns></returns>
@@ -45,8 +41,7 @@ namespace SuperBike.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                var motorcycleInsertRequest = new MotorcycleInsertRequest(motorcycle);
-                motorcycleInsertRequest.RequestId = Guid.NewGuid();
+                var motorcycleInsertRequest = new MotorcycleInsertRequest(motorcycle);                
                 motorcycleInsertRequest.From = "host:api";
                 motorcycleInsertRequest.Version = "1.0";
                 var motorcycleInsertResponse = await MotorcycleUseCase.Insert(motorcycleInsertRequest);
@@ -59,13 +54,41 @@ namespace SuperBike.Api.Controllers
 
             return BadRequest();
         }
-        /*
-        // PUT api/<GoController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+
+        // GET api/<GoController>/5
+        /// <summary>
+        /// Obter uma motocicleta pela sua placa.
+        /// </summary>
+        /// <param name="plate"></param>
+        /// <returns></returns>
+        [HttpGet("{plate}")]
+        public async Task<IActionResult> GetByPlate(string plate)
         {
+            var motorcycle = new MotorcycleGet { Plate = plate };
+            var result = MotorcycleUseCase.Validate(motorcycle);
+
+            if (!result.IsSuccess) return BadRequest(result);
+
+            var motorcycleGetRequest = new MotorcycleGetRequest(motorcycle);            
+            motorcycleGetRequest.From = "host:api";
+            motorcycleGetRequest.Version = "1.0";
+
+            var motorcycleGetResponse = await MotorcycleUseCase.GetByPlate(motorcycleGetRequest);
+
+            if (motorcycleGetResponse.IsSuccess && motorcycleGetResponse.Data.Id > 0) 
+                return Ok(motorcycleGetResponse);
+
+            return NotFound(motorcycleGetResponse);
         }
 
+        // PUT api/<GoController>/5
+        [HttpPut]
+        public void Update([FromBody] MotorcycleUpdate motorcycle)
+        {
+
+        }
+
+        /*
         // DELETE api/<GoController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)

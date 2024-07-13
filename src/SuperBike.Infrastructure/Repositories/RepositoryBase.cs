@@ -10,7 +10,7 @@ namespace SuperBike.Infrastructure.Repositories
         #region Properties/Fields
 
         private IDbTransaction _dbTransaction;
-        private IDbTransaction DbTransaction => _dbTransaction;
+        internal IDbTransaction DbTransaction => _dbTransaction;
 
         private Type _typeEntity = typeof(TEntity);
         private Type TypeEntity => _typeEntity;

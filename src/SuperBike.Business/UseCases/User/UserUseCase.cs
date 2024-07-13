@@ -54,7 +54,7 @@ namespace SuperBike.Business.UseCases.User
                 "Iniciando [insert] de usuário: {LoginUserName}".LogInf(userInsertRequest.Data.LoginUserName);
 
                 var user = userInsertRequest.Data;
-                var userInsertResponse = new UserInsertResponse(user);
+                var userInsertResponse = new UserInsertResponse(user) { RequestId = userInsertRequest.RequestId };
                 var result = Validate(user);
 
                 if (!result.IsSuccess)
@@ -104,7 +104,7 @@ namespace SuperBike.Business.UseCases.User
                 "Erro ao [inserir] usuário: {LoginUserName}".LogErr(userInsertRequest.Data.LoginUserName);
                 exc.Message.LogErr(exc);
 
-                var userInsertResponse = new UserInsertResponse(userInsertRequest.Data);
+                var userInsertResponse = new UserInsertResponse(userInsertRequest.Data) { RequestId = userInsertRequest.RequestId };
                 userInsertResponse.Errors.Add(exc.Message);
                 return userInsertResponse;
             }
@@ -118,7 +118,7 @@ namespace SuperBike.Business.UseCases.User
                 "Iniciando 'login' de usuário: {LoginUserName}".LogInf(userLoginRequest.Data.LoginUserName);
 
                 var user = userLoginRequest.Data;
-                var userLoginResponse = new UserLoginResponse(new UserLogin { LoginUserName = user.LoginUserName });
+                var userLoginResponse = new UserLoginResponse(new UserLogin { LoginUserName = user.LoginUserName }) { RequestId = userLoginRequest.RequestId };
 
                 var result = await SignInManager.PasswordSignInAsync(user.LoginUserName, user.Password, false, true);
                 if (result.Succeeded)
@@ -143,7 +143,7 @@ namespace SuperBike.Business.UseCases.User
                 "Erro no [login] usuário: {LoginUserName}".LogErr(userLoginRequest.Data.LoginUserName);
                 exc.Message.LogErr(exc);
 
-                var userLoginResponse = new UserLoginResponse(userLoginRequest.Data);
+                var userLoginResponse = new UserLoginResponse(userLoginRequest.Data) { RequestId = userLoginRequest.RequestId };
                 userLoginResponse.Errors.Add(exc.Message);                
                 return userLoginResponse;
             }
