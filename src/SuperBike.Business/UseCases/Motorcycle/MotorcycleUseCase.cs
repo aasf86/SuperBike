@@ -3,6 +3,7 @@ using SuperBike.Business.Contracts.UseCases.Motorcycle;
 using SuperBike.Business.Dtos.Motorcycle.Request;
 using SuperBike.Business.Dtos.Motorcycle.Response;
 using SuperBike.Domain.Contracts.Repositories.Motorcycle;
+using System.Data;
 using Entity = SuperBike.Domain.Entities;
 
 namespace SuperBike.Business.UseCases.Motorcycle
@@ -11,9 +12,13 @@ namespace SuperBike.Business.UseCases.Motorcycle
     {
         private readonly IMotorcycleRepository _motorcycleRepository;
         private IMotorcycleRepository MotorcycleRepository => _motorcycleRepository;
-        public MotorcycleUseCase(ILogger<MotorcycleUseCase> logger, IMotorcycleRepository motorcycleRepository) : base(logger) 
+        public MotorcycleUseCase(
+            ILogger<MotorcycleUseCase> logger, 
+            IMotorcycleRepository motorcycleRepository,
+            IDbConnection dbConnection) : base(logger, dbConnection) 
         {
             _motorcycleRepository = motorcycleRepository;
+            TransactionAssigner.Add(_motorcycleRepository.SetTransaction);
         }
 
         public async Task<MotorcycleInsertResponse> Insert(MotorcycleInsertRequest motorcycleInsertRequest)
@@ -34,18 +39,23 @@ namespace SuperBike.Business.UseCases.Motorcycle
                     return motorcycleInsertResponse;
                 }
 
-                //aasf86 verificar se já existe placa
-                //'MotorcycleRepository.GetAll' ou 'MotorcycleRepository.Get'
+                await UnitOfWorkExecute(async () =>
+                {
+                    //aasf86 verificar se já existe placa
+                    //'MotorcycleRepository.GetAll' ou 'MotorcycleRepository.Get'
 
-                var item = await MotorcycleRepository.GetById(5);
-                
-                var newItem = new Entity.Motorcycle(item.Year, item.Model + "*", item.Plate);
-                newItem.Id = item.Id;
+                    var item = await MotorcycleRepository.GetById(5);
 
-                await MotorcycleRepository.Update(newItem);
+                    var newItem = new Entity.Motorcycle(item.Year, item.Model + "*", item.Plate);
+                    newItem.Id = item.Id;
+
+                    await MotorcycleRepository.Update(newItem);
 
 
-                await MotorcycleRepository.Insert(new Entity.Motorcycle(motocycle.Year, motocycle.Model, motocycle.Plate));
+                    await MotorcycleRepository.Insert(new Entity.Motorcycle(motocycle.Year, motocycle.Model, motocycle.Plate));
+
+                });
+
 
                 return motorcycleInsertResponse;
             }

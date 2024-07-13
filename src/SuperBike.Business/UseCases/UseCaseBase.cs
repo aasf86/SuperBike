@@ -1,13 +1,22 @@
 ﻿using Microsoft.Extensions.Logging;
+using SuperBike.Auth.Context;
+using SuperBike.Business.Contracts;
 using SuperBike.Business.UseCases.User;
 using SuperBike.Business.UseCases.Validators;
+using SuperBike.Infrastructure;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 
 namespace SuperBike.Business.UseCases
 {
-    public abstract class UseCaseBase
+    public abstract class UseCaseBase : UnitOfWorkScope
     {
-        protected UseCaseBase(ILogger<UseCaseBase> logger) => LogUseCase.SetLogger(logger);
+        private readonly IDbConnection _dbConnection;
+        private IDbConnection DbConnection => _dbConnection;
+        protected UseCaseBase(ILogger<UseCaseBase> logger, IDbConnection dbConnection) : base(dbConnection)
+        {
+            LogUseCase.SetLogger(logger);            
+        }
         
         public virtual ResultValidation Validate(object entity)
         {
@@ -15,7 +24,7 @@ namespace SuperBike.Business.UseCases
 
             var valid = new ValidationContext(entity);
             var valids = new List<ValidationResult>();
-            var result = Validator.TryValidateObject(entity, valid, valids, true);
+            var result = Validator.TryValidateObject(entity, valid, valids, true);            
             
             return new ResultValidation(valids);
         }

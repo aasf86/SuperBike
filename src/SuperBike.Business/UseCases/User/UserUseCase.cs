@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SuperBike.Auth.Business;
 using SuperBike.Auth.Config;
+using SuperBike.Auth.Context;
 using SuperBike.Business.Contracts.UseCases.User;
 using SuperBike.Business.Dtos.User;
 using SuperBike.Business.Dtos.User.Request;
 using SuperBike.Business.Dtos.User.Response;
+using System.Data;
+using System.Data.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -16,29 +20,35 @@ namespace SuperBike.Business.UseCases.User
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<IdentityRole> _roleManager;        
         private readonly JwtOptions _jwtOptions;
+        private readonly AuthIdentityDbContext _authIdentityDbContext;
 
         private SignInManager<IdentityUser> SignInManager => _signInManager;
         private UserManager<IdentityUser> UserManager => _userManager;
         private RoleManager<IdentityRole> RoleManager => _roleManager;
         private JwtOptions JwtOptions => _jwtOptions;
+        private AuthIdentityDbContext AuthIdentityDbContext => _authIdentityDbContext;
 
         public UserUseCase(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IOptions<JwtOptions> jwtOptions,            
-            ILogger<UserUseCase> logger) : base(logger)
+            IOptions<JwtOptions> jwtOptions,
+            AuthIdentityDbContext authIdentityDbContext,
+            ILogger<UserUseCase> logger) : base(logger, authIdentityDbContext.Database.GetDbConnection())
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
             _roleManager = roleManager;
+            _authIdentityDbContext = authIdentityDbContext;
+            TransactionAssigner.Add(transaction => authIdentityDbContext.Database.UseTransaction(transaction as DbTransaction));
         }
 
         public async Task<UserInsertResponse> Insert(UserInsertRequest userInsertRequest)
         {
+
             try
             {
                 "Iniciando [insert] de usuário: {LoginUserName}".LogInf(userInsertRequest.Data.LoginUserName);
@@ -49,12 +59,12 @@ namespace SuperBike.Business.UseCases.User
 
                 if (!result.IsSuccess)
                 {
-                    userInsertResponse.Errors.AddRange(result.Validation.Select(x => x.ErrorMessage).ToList());                    
+                    userInsertResponse.Errors.AddRange(result.Validation.Select(x => x.ErrorMessage).ToList());
                     var errors = string.Join("\n", userInsertResponse.Errors.ToArray());
                     $"Usuário inválido '{{LoginUserName}}': {errors} ".LogWrn(user.LoginUserName);
                     return userInsertResponse;
                 }
-                
+
                 var identityUser = new IdentityUser
                 {
                     UserName = user.LoginUserName,
@@ -62,29 +72,30 @@ namespace SuperBike.Business.UseCases.User
                     EmailConfirmed = true
                 };
 
-                var resultCreate = await UserManager.CreateAsync(identityUser, user.Password);
-
-                if (resultCreate.Succeeded)
+                await UnitOfWorkExecute(async () =>
                 {
-                    await UserManager.SetLockoutEnabledAsync(identityUser, false);                    
+                    var resultCreate = await UserManager.CreateAsync(identityUser, user.Password);
 
-                    var resultAddUserRole = await UserManager.AddToRoleAsync(identityUser, RoleTypeSuperBike.Deliveryman);
-
-                    if (!resultAddUserRole.Succeeded)
+                    if (resultCreate.Succeeded)
                     {
-                        userInsertResponse.Errors.AddRange(resultAddUserRole.Errors.Select(r => r.Description));
+                        await UserManager.SetLockoutEnabledAsync(identityUser, false);
+
+                        var resultAddUserRole = await UserManager.AddToRoleAsync(identityUser, RoleTypeSuperBike.Deliveryman);
+
+                        if (!resultAddUserRole.Succeeded)
+                        {
+                            userInsertResponse.Errors.AddRange(resultAddUserRole.Errors.Select(r => r.Description));
+                            var errors = string.Join("\n", userInsertResponse.Errors.ToArray());                            
+                            $"Validações do Identity {{LoginUserName}} Erros: {errors}".LogWrn(user.LoginUserName);
+                        }
+                    }
+                    else
+                    {
+                        userInsertResponse.Errors.AddRange(resultCreate.Errors.Select(r => r.Description));
                         var errors = string.Join("\n", userInsertResponse.Errors.ToArray());
-                        $"Removendo usuário por falta de perfil: {RoleTypeSuperBike.Deliveryman}".LogWrn();
-                        await UserManager.DeleteAsync(identityUser);
                         $"Validações do Identity {{LoginUserName}} Erros: {errors}".LogWrn(user.LoginUserName);
                     }
-                }
-                else
-                {
-                    userInsertResponse.Errors.AddRange(resultCreate.Errors.Select(r => r.Description));
-                    var errors = string.Join("\n", userInsertResponse.Errors.ToArray());
-                    $"Validações do Identity {{LoginUserName}} Erros: {errors}".LogWrn(user.LoginUserName);
-                }
+                });
 
                 return userInsertResponse;
             }
@@ -94,9 +105,10 @@ namespace SuperBike.Business.UseCases.User
                 exc.Message.LogErr(exc);
 
                 var userInsertResponse = new UserInsertResponse(userInsertRequest.Data);
-                userInsertResponse.Errors.Add(exc.Message);                
+                userInsertResponse.Errors.Add(exc.Message);
                 return userInsertResponse;
             }
+
         }
 
         public async Task<UserLoginResponse> Login(UserLoginRequest userLoginRequest)
@@ -135,8 +147,48 @@ namespace SuperBike.Business.UseCases.User
                 userLoginResponse.Errors.Add(exc.Message);                
                 return userLoginResponse;
             }
+            
         }
 
+        /*
+        public override Task UnitOfWorkCommand(Func<Task> command)
+        {
+            return base.UnitOfWorkCommand(command);
+        }
+        
+        private override async Task UnitOfWorkCommand(Func<Task> command)
+        {            
+            using var transaction = await AuthIdentityDbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                await command();
+                await transaction.CommitAsync();                
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        */
+        /*
+        public override async Task UnitOfWorkExecute(Func<Task> execute)
+        {
+            using var transaction = await AuthIdentityDbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                await execute();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+        */
         private async Task<UserLoginResponse> GenerateToken(string email)
         {
             var user = await UserManager.FindByEmailAsync(email);

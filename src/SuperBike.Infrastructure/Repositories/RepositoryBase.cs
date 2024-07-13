@@ -9,8 +9,8 @@ namespace SuperBike.Infrastructure.Repositories
     {
         #region Properties/Fields
 
-        private readonly IDbConnection _dbConnection;
-        private IDbConnection DbConnection => _dbConnection;
+        private IDbTransaction _dbTransaction;
+        private IDbTransaction DbTransaction => _dbTransaction;
 
         private Type _typeEntity = typeof(TEntity);
         private Type TypeEntity => _typeEntity;
@@ -47,13 +47,15 @@ namespace SuperBike.Infrastructure.Repositories
         ";
 
         #endregion
-        protected RepositoryBase(IDbConnection dbConnection) 
+
+        public virtual void SetTransaction(IDbTransaction dbTransaction) 
         {
-            _dbConnection = dbConnection;
+            _dbTransaction = dbTransaction;
         }
+
         public virtual async Task Delete(int id)
         {
-            await DbConnection.ExecuteAsync(SqlDelete, new { id });
+            await DbTransaction.Connection.ExecuteAsync(SqlDelete, new { id });
         }
 
         public virtual async Task<List<TEntity?>> GetAll(dynamic filter)
@@ -64,17 +66,17 @@ namespace SuperBike.Infrastructure.Repositories
 
         public virtual async Task<TEntity?> GetById(int id)
         {            
-            return await DbConnection.QuerySingleAsync<TEntity?>($"{SqlSelect}", new { id });
+            return await DbTransaction.Connection.QuerySingleAsync<TEntity?>($"{SqlSelect}", new { id });
         }
 
         public virtual async Task Insert(TEntity entity)
         {            
-            entity.Id = await DbConnection.ExecuteScalarAsync<int>(SqlInsert, entity);
+            entity.Id = await DbTransaction.Connection.ExecuteScalarAsync<int>(SqlInsert, entity);
         }
 
         public virtual async Task Update(TEntity entity)
         {
-            await DbConnection.ExecuteAsync(SqlUdapte, entity);
+            await DbTransaction.Connection.ExecuteAsync(SqlUdapte, entity);
         }
     }
 }
