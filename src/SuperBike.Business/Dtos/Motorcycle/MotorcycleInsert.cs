@@ -1,20 +1,21 @@
-﻿using SuperBike.Domain.Contracts.UseCases.Motorcycle;
-using System.ComponentModel.DataAnnotations;
-using Entity = SuperBike.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using static SuperBike.Domain.Entities.Motorcycle;
 
 namespace SuperBike.Business.Dtos.Motorcycle
 {
     public class MotorcycleInsert
     {
-        [Range(Entity.Motorcycle.YearMinimalValue, int.MaxValue, ErrorMessage = MotorcycleMsgDialog.InvalidYear)]
-        public int Year { get; private set; }
+        [Range(MotorcycleRole.YearMinimalValue, int.MaxValue, ErrorMessage = MotorcycleMsgDialog.InvalidYear)]
+        public int Year { get; set; }
 
-        [MinLength(Entity.Motorcycle.ModelMinimalLenth, ErrorMessage = MotorcycleMsgDialog.RequiredModel)]
+        [MinLength(MotorcycleRole.ModelMinimalLenth, ErrorMessage = MotorcycleMsgDialog.RequiredModel)]
         [Required(ErrorMessage = MotorcycleMsgDialog.RequiredModel)]
-        public string Model { get; private set; } = "";
+        [MaxLength(100, ErrorMessage = MotorcycleMsgDialog.InvalidModel )]
+        public string Model { get; set; } = "";
 
-        [MinLength(Entity.Motorcycle.PlateMinimalLenth, ErrorMessage = MotorcycleMsgDialog.RequiredPlate)]
+        [MinLength(MotorcycleRole.PlateMinimalLenth, ErrorMessage = MotorcycleMsgDialog.InvalidPlate)]
         [Required(ErrorMessage = MotorcycleMsgDialog.RequiredPlate)]
-        public string Plate { get; private set; } = "";
+        [MaxLength(MotorcycleRole.PlateMaxLenth, ErrorMessage = MotorcycleMsgDialog.InvalidPlate)]
+        public string Plate { get; set; } = "";
     }
 }

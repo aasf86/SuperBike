@@ -1,29 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
-using SuperBike.Auth.Config;
-using SuperBike.Business.Dtos.Motorcycle;
+using SuperBike.Business.Contracts.UseCases.Motorcycle;
 using SuperBike.Business.Dtos.Motorcycle.Request;
 using SuperBike.Business.Dtos.Motorcycle.Response;
-using SuperBike.Business.Dtos.User.Request;
-using SuperBike.Business.Dtos.User.Response;
-using SuperBike.Business.UseCases.User;
 using SuperBike.Domain.Contracts.Repositories.Motorcycle;
-using SuperBike.Domain.Contracts.UseCases;
-using SuperBike.Domain.Contracts.UseCases.Motorcycle;
-using SuperBike.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Entity = SuperBike.Domain.Entities;
 
 namespace SuperBike.Business.UseCases.Motorcycle
 {
-    internal class MotorcycleUseCase : UseCaseBase, 
-        IMotorcycleUseCase
-        /*<
-            MotorcycleInsertRequest, MotorcycleInsertResponse
-        >*/
+    public class MotorcycleUseCase : UseCaseBase, IMotorcycleUseCase
     {
         private readonly IMotorcycleRepository _motorcycleRepository;
         private IMotorcycleRepository MotorcycleRepository => _motorcycleRepository;
@@ -52,6 +36,14 @@ namespace SuperBike.Business.UseCases.Motorcycle
 
                 //aasf86 verificar se já existe placa
                 //'MotorcycleRepository.GetAll' ou 'MotorcycleRepository.Get'
+
+                var item = await MotorcycleRepository.GetById(5);
+                
+                var newItem = new Entity.Motorcycle(item.Year, item.Model + "*", item.Plate);
+                newItem.Id = item.Id;
+
+                await MotorcycleRepository.Update(newItem);
+
 
                 await MotorcycleRepository.Insert(new Entity.Motorcycle(motocycle.Year, motocycle.Model, motocycle.Plate));
 

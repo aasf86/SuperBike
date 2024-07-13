@@ -5,6 +5,10 @@ namespace SuperBike.Auth.Context
 {
     public class AuthIdentityDbContext : IdentityDbContext
     {
-        public AuthIdentityDbContext(DbContextOptions<AuthIdentityDbContext> options) : base(options) { }
+        public AuthIdentityDbContext(DbContextOptions<AuthIdentityDbContext> options) : base(options) 
+        {
+            AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        }
     }
 }

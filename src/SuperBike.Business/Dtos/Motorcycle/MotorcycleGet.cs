@@ -1,7 +1,4 @@
-﻿using SuperBike.Domain.Contracts.UseCases.Motorcycle;
-using System.ComponentModel.DataAnnotations;
-using System.Dynamic;
-using Entity = SuperBike.Domain.Entities;
+﻿using System.Dynamic;
 
 namespace SuperBike.Business.Dtos.Motorcycle
 {

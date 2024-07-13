@@ -2,7 +2,6 @@
 using SuperBike.Business.Contracts.UseCases.User;
 using SuperBike.Business.Dtos.User;
 using SuperBike.Business.Dtos.User.Request;
-using SuperBike.Business.Dtos.User.Response;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,6 +14,10 @@ namespace SuperBike.Api.Controllers
         private readonly IUserUseCase _userUseCase;
         private IUserUseCase UserUseCase => _userUseCase;
 
+        /// <summary>
+        /// Controllers para gestão de usuários.
+        /// </summary>
+        /// <param name="userUseCase"></param>
         public UserController(IUserUseCase userUseCase) => _userUseCase = userUseCase;
 
         // POST api/<UserController>

@@ -12,5 +12,10 @@ namespace SuperBike.Infrastructure.Repositories.Motorcycle
     public class MotorcycleRepository : RepositoryBase<Entity.Motorcycle>, IMotorcycleRepository
     {
         public MotorcycleRepository(IDbConnection connection) : base(connection) { }
+
+        public Task<Entity.Motorcycle> GetByPlate(string plate)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

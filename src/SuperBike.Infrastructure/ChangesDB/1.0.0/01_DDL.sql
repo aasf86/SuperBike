@@ -1,4 +1,4 @@
-﻿--Script de criação das tabelas do AspNetCore.Identity
+﻿/*Script de criação das tabelas do AspNetCore.Identity*/
 
 CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
     "MigrationId" character varying(150) NOT NULL,
@@ -90,3 +90,16 @@ CREATE INDEX "IX_AspNetUserRoles_RoleId" ON "AspNetUserRoles" ("RoleId");
 CREATE INDEX "EmailIndex" ON "AspNetUsers" ("NormalizedEmail");
 
 CREATE UNIQUE INDEX "UserNameIndex" ON "AspNetUsers" ("NormalizedUserName");
+
+/*Script de criação de tabelas SuperBike*/
+
+create table motorcycle
+(
+	id bigserial not null primary key,
+    guid uuid DEFAULT gen_random_uuid(), 
+    inserted timestamp without time zone NOT NULL DEFAULT now(),
+    updated timestamp without time zone NOT NULL DEFAULT now(),
+    year integer not null,
+    model varchar(100) not null,
+    plate varchar(7) not null unique
+);
