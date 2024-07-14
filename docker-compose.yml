@@ -28,6 +28,19 @@ services:
      - pgdata-superbikedb:/var/lib/postgresql/data
     networks:
      netsuperbike:
+#<rabbitmq>     
+  rabbitmq:
+    container_name: rabbitmq
+    tty: true
+    hostname: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+#</rabbitmq>     
 
 volumes:
   pgdata-superbikedb: {}

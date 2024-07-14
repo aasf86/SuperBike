@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using SuperBike.Auth.Context;
+using System.Data;
 using System.Text;
 
 namespace SuperBike.Auth.Config
@@ -69,7 +70,12 @@ namespace SuperBike.Auth.Config
             builder.Services.AddDefaultIdentity<IdentityUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AuthIdentityDbContext>()                
-                .AddDefaultTokenProviders();            
+                .AddDefaultTokenProviders();
+
+            builder.Services.AddScoped<IDbConnection>(src => {
+                var context = src.GetRequiredService<AuthIdentityDbContext>();
+                return context.Database.GetDbConnection();
+            });
         }
     }
 }

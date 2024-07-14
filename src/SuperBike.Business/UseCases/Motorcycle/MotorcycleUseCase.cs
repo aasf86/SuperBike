@@ -3,6 +3,9 @@ using SuperBike.Business.Contracts.UseCases.Motorcycle;
 using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.Motorcycle;
 using SuperBike.Domain.Contracts.Repositories.Motorcycle;
+using SuperBike.Domain.Contracts.Services;
+using SuperBike.Domain.Events;
+using SuperBike.Domain.Events.Motorcycle;
 using System.Data;
 using static SuperBike.Domain.Entities.Motorcycle;
 using Entity = SuperBike.Domain.Entities;
@@ -13,12 +16,17 @@ namespace SuperBike.Business.UseCases.Motorcycle
     {
         private readonly IMotorcycleRepository _motorcycleRepository;
         private IMotorcycleRepository MotorcycleRepository => _motorcycleRepository;
+
+        private readonly IMessageBroker _messageBroker;
+        private IMessageBroker MessageBroker => _messageBroker;
         public MotorcycleUseCase(
             ILogger<MotorcycleUseCase> logger, 
             IMotorcycleRepository motorcycleRepository,
-            IDbConnection dbConnection) : base(logger, dbConnection) 
+            IDbConnection dbConnection,
+            IMessageBroker messageBroker) : base(logger, dbConnection) 
         {
             _motorcycleRepository = motorcycleRepository;
+            _messageBroker = messageBroker;
             TransactionAssigner.Add(_motorcycleRepository.SetTransaction);
         }
 
@@ -40,26 +48,35 @@ namespace SuperBike.Business.UseCases.Motorcycle
                     return motorcycleInsertResponse;
                 }
 
+                var motorcycleEntity = new Entity.Motorcycle(motocycleInsert.Year, motocycleInsert.Model, motocycleInsert.Plate);
+
                 await UnitOfWorkExecute(async () =>
                 {                    
                     var motorcycleFromDb = await MotorcycleRepository.GetByPlate(motocycleInsert.Plate);
 
                     if (motorcycleFromDb is null)
                     {
-                        await MotorcycleRepository.Insert(new Entity.Motorcycle(motocycleInsert.Year, motocycleInsert.Model, motocycleInsert.Plate));
+                        await MotorcycleRepository.Insert(motorcycleEntity);
+                        return;
                     }
-                    else
-                    {
-                        var strMsg = string.Format(MotorcycleMsgDialog.AlreadyRegistered, motorcycleFromDb?.Model);
-                        motorcycleInsertResponse.Errors.Add(strMsg);
-                        strMsg.LogWrn(motorcycleFromDb?.Model);                        
-                    }
+                    
+                    var strMsg = string.Format(MotorcycleMsgDialog.AlreadyRegistered, motorcycleFromDb?.Model);
+                    motorcycleInsertResponse.Errors.Add(strMsg);
+                    strMsg.LogWrn(motorcycleFromDb?.Model);                    
                 });
 
-//aasf86 Inserir na fila rabit MQ
-#warning >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-#warning >>>>>>>>>>>>>>>>>>>>>>>>>Inserir na fila rabit MQ<<<<<<<<<<<<<<<<<<<<<<<<<
-#warning >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                var eventMotorcycleInserted = new MotorcycleInserted 
+                { 
+                    Id = motorcycleEntity.Id,
+                    Date = motorcycleEntity.Inserted,
+                    From = motorcycleInsertRequest.From,
+                    Version = motorcycleInsertRequest.Version,
+                    Model = motorcycleEntity.Model,
+                    Plate = motorcycleEntity.Plate,
+                    Year = motorcycleEntity.Year
+                };
+
+                await MessageBroker.Publish(eventMotorcycleInserted, Queues.Motorcycle.MOTORCYCLE_INSERTED);
 
                 return motorcycleInsertResponse;
             }

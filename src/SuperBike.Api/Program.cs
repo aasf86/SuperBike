@@ -1,15 +1,8 @@
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SuperBike.Api.Config;
 using SuperBike.Auth.Config;
-using SuperBike.Auth.Context;
-using SuperBike.Business.Contracts.UseCases.Motorcycle;
-using SuperBike.Business.Contracts.UseCases.User;
-using SuperBike.Business.UseCases.Motorcycle;
-using SuperBike.Business.UseCases.User;
-using SuperBike.Domain.Contracts.Repositories.Motorcycle;
-using SuperBike.Infrastructure.Repositories.Motorcycle;
-using System.Data;
+using SuperBike.Business.Config;
+using SuperBike.Infrastructure.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,18 +20,13 @@ builder.Services.AddSwaggerGenSuperBike();
 //Gestão de autenticação e autorização do super bike
 builder.AddAuthSuperBike();
 
-//Injeção de dependências
-builder.Services.AddScoped<IDbConnection>(src => {    
-    var context = src.GetRequiredService<AuthIdentityDbContext>();
-    return context.Database.GetDbConnection();
-});
-builder.Services.AddScoped<IMotorcycleRepository, MotorcycleRepository>();
-builder.Services.AddScoped<IUserUseCase, UserUseCase>();
-builder.Services.AddScoped<IMotorcycleUseCase, MotorcycleUseCase>();
+//Injeção de dependências do super bike
+builder.Services.AddBusinessIoC();
+builder.Services.AddInfrastructureIoC(builder.Configuration);
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.Seq("http://localhost:5341")
+    .WriteTo.Seq(builder.Configuration.GetSection("ServerLog").Value ?? "")
     .Enrich.WithEnvironmentName()
     .Enrich.WithEnvironmentUserName()
     .Enrich.WithProcessName()
