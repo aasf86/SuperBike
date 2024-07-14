@@ -6,6 +6,6 @@ namespace SuperBike.Domain.Contracts.Repositories
     {
         Task Insert(TEntity entity);
         Task Update(TEntity entity);
-        Task Delete(int id);
+        Task<bool> Delete(int id);
     }
 }

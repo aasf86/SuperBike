@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using SuperBike.Auth.Context;
-using SuperBike.Business.Contracts;
-using SuperBike.Business.UseCases.User;
 using SuperBike.Business.UseCases.Validators;
 using SuperBike.Infrastructure;
 using System.ComponentModel.DataAnnotations;
@@ -11,8 +8,6 @@ namespace SuperBike.Business.UseCases
 {
     public abstract class UseCaseBase : UnitOfWorkScope
     {
-        private readonly IDbConnection _dbConnection;
-        private IDbConnection DbConnection => _dbConnection;
         protected UseCaseBase(ILogger<UseCaseBase> logger, IDbConnection dbConnection) : base(dbConnection)
         {
             LogUseCase.SetLogger(logger);            

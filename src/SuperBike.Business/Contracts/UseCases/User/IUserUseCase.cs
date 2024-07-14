@@ -1,11 +1,11 @@
-﻿using SuperBike.Business.Dtos.User.Request;
-using SuperBike.Business.Dtos.User.Response;
+﻿using SuperBike.Business.Dtos;
+using SuperBike.Business.Dtos.User;
 
 namespace SuperBike.Business.Contracts.UseCases.User
 {
     public interface IUserUseCase : IValidators
     {
-        Task<UserInsertResponse> Insert(UserInsertRequest request);
-        Task<UserLoginResponse> Login(UserLoginRequest request);
+        Task<ResponseBase<UserInsert>> Insert(RequestBase<UserInsert> request);
+        Task<ResponseBase<UserLogin>> Login(RequestBase<UserLogin> request);
     }
 }

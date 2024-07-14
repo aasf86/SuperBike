@@ -1,15 +1,13 @@
-﻿using SuperBike.Business.Dtos.Motorcycle.Request;
-using SuperBike.Business.Dtos.Motorcycle.Response;
+﻿using SuperBike.Business.Dtos;
+using SuperBike.Business.Dtos.Motorcycle;
 
 namespace SuperBike.Business.Contracts.UseCases.Motorcycle
 {
     public interface IMotorcycleUseCase : IValidators
     {
-        Task<MotorcycleInsertResponse> Insert(MotorcycleInsertRequest request);
-        Task<MotorcycleGetResponse> GetByPlate(MotorcycleGetRequest request);
-        /*Task Update(RequestUpdate request);
-          Task Delete(RequestDelete request);
-          Task GetByGuid(RequestGetGuid request);
-          Task GetAll(RequestGetAll request);*/
+        Task<ResponseBase<MotorcycleInsert>> Insert(RequestBase<MotorcycleInsert> request);        
+        Task<ResponseBase<MotorcycleGet>> GetByPlate(RequestBase<MotorcycleGet> request);
+        Task<ResponseBase<MotorcycleUpdate>> Update(RequestBase<MotorcycleUpdate> request);
+        Task<ResponseBase<MotorcycleDelete>> Delete(RequestBase<MotorcycleDelete> request);        
     }
 }

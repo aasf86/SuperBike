@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SuperBike.Business.Contracts.UseCases.User;
+using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.User;
-using SuperBike.Business.Dtos.User.Request;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace SuperBike.Api.Controllers
 {
+    /// <summary>
+    /// Controller para gestão de login de usuários.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -15,7 +18,7 @@ namespace SuperBike.Api.Controllers
         private IUserUseCase UserUseCase => _userUseCase;
 
         /// <summary>
-        /// Controllers para gestão de usuários.
+        /// Controller para gestão de usuários.
         /// </summary>
         /// <param name="userUseCase"></param>
         public UserController(IUserUseCase userUseCase) => _userUseCase = userUseCase;
@@ -31,7 +34,7 @@ namespace SuperBike.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userInsertRequest = new UserInsertRequest(user);
+                var userInsertRequest = RequestBase.New(user);
                 userInsertRequest.From = "host:api";
                 userInsertRequest.Version = "1.0";
                 var userInsertResponse = await UserUseCase.Insert(userInsertRequest);
@@ -47,7 +50,7 @@ namespace SuperBike.Api.Controllers
 
         // PUT api/<UserController>/5
         /// <summary>
-        /// "Login para obtenção de token para usuários 'locador' e 'admin'."
+        /// "Login para obtenção de token para usuários 'entregador' e 'admin'."
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>        
@@ -56,7 +59,7 @@ namespace SuperBike.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userLoginRequest = new UserLoginRequest(user);
+                var userLoginRequest = RequestBase.New(user);
                 userLoginRequest.From = "host:api";
                 userLoginRequest.Version = "1.0";
                 var userLoginResponse = await UserUseCase.Login(userLoginRequest);

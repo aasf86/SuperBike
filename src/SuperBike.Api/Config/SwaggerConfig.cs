@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerUI;
+﻿using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace SuperBike.Api.Config

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SuperBike.Domain.Entities
+﻿namespace SuperBike.Domain.Entities
 {
     public class EntityBase
     {

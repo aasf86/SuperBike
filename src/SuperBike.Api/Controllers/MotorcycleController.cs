@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SuperBike.Auth.Business;
+﻿using Microsoft.AspNetCore.Mvc;
 using SuperBike.Business.Contracts.UseCases.Motorcycle;
+using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.Motorcycle;
-using SuperBike.Business.Dtos.Motorcycle.Request;
-using SuperBike.Business.UseCases.Motorcycle;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace SuperBike.Api.Controllers
 {
-    //aasf86
+    /// <summary>
+    /// Controller para gestão de cadastros de motocicletas.
+    /// </summary>
+    //aasf86 Authorize
     //[Authorize(Roles = RoleTypeSuperBike.Admin)]
     [Route("api/[controller]")]
     [ApiController]
@@ -19,18 +19,12 @@ namespace SuperBike.Api.Controllers
         private readonly IMotorcycleUseCase _motorcycleUseCase;
         private IMotorcycleUseCase MotorcycleUseCase => _motorcycleUseCase;
 
+        /// <summary>
+        /// Controller para gestão de cadastros de motocicletas.
+        /// </summary>
+        /// <param name="motorcycleUseCase"></param>
         public MotorcycleController(IMotorcycleUseCase motorcycleUseCase) => _motorcycleUseCase = motorcycleUseCase;
-        /*
-        // GET: api/<GoController>        
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        */
-
-        // POST api/<GoController>
+        
         /// <summary>
         /// Inserir nova motocicleta.
         /// </summary>
@@ -41,9 +35,7 @@ namespace SuperBike.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                var motorcycleInsertRequest = new MotorcycleInsertRequest(motorcycle);                
-                motorcycleInsertRequest.From = "host:api";
-                motorcycleInsertRequest.Version = "1.0";
+                var motorcycleInsertRequest = RequestBase.New(motorcycle, "host:api", "1.0");                
                 var motorcycleInsertResponse = await MotorcycleUseCase.Insert(motorcycleInsertRequest);
 
                 if (motorcycleInsertResponse.IsSuccess)
@@ -54,8 +46,7 @@ namespace SuperBike.Api.Controllers
 
             return BadRequest();
         }
-
-        // GET api/<GoController>/5
+                
         /// <summary>
         /// Obter uma motocicleta pela sua placa.
         /// </summary>
@@ -64,15 +55,12 @@ namespace SuperBike.Api.Controllers
         [HttpGet("{plate}")]
         public async Task<IActionResult> GetByPlate(string plate)
         {
-            var motorcycle = new MotorcycleGet { Plate = plate };
-            var result = MotorcycleUseCase.Validate(motorcycle);
+            var motorcycleGet = new MotorcycleGet { Plate = plate };
+            var result = MotorcycleUseCase.Validate(motorcycleGet);
 
             if (!result.IsSuccess) return BadRequest(result);
 
-            var motorcycleGetRequest = new MotorcycleGetRequest(motorcycle);            
-            motorcycleGetRequest.From = "host:api";
-            motorcycleGetRequest.Version = "1.0";
-
+            var motorcycleGetRequest = RequestBase.New(motorcycleGet, "host:api", "1.0");
             var motorcycleGetResponse = await MotorcycleUseCase.GetByPlate(motorcycleGetRequest);
 
             if (motorcycleGetResponse.IsSuccess && motorcycleGetResponse.Data.Id > 0) 
@@ -80,20 +68,48 @@ namespace SuperBike.Api.Controllers
 
             return NotFound(motorcycleGetResponse);
         }
-
-        // PUT api/<GoController>/5
+        
+        /// <summary>
+        /// Atualizar a placa de uma motocicleta.
+        /// </summary>
+        /// <param name="motorcycle"></param>
+        /// <returns></returns>
         [HttpPut]
-        public void Update([FromBody] MotorcycleUpdate motorcycle)
+        public async Task<IActionResult> Update([FromBody] MotorcycleUpdate motorcycle)
         {
+            if (ModelState.IsValid)
+            {
+                var motorcycleUpdateRequest = RequestBase.New(motorcycle, "host:api", "1.0");
+                var motorcycleUpdateResponse = await MotorcycleUseCase.Update(motorcycleUpdateRequest);
 
+                if (motorcycleUpdateResponse.IsSuccess)
+                    return Ok(motorcycleUpdateResponse);
+
+                return BadRequest(motorcycleUpdateResponse);
+            }
+            return BadRequest();
         }
-
-        /*
-        // DELETE api/<GoController>/5
+        
+        /// <summary>
+        /// Remove motocicleta pelo seu 'Id'.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-        }
-        */
+            var motorcycleDelete = new MotorcycleDelete { Id = id };
+            var result = MotorcycleUseCase.Validate(motorcycleDelete);
+
+            if (!result.IsSuccess) return BadRequest(result);
+
+            var motorcycleDeleteRequest = RequestBase.New(motorcycleDelete, "host:api", "1.0");
+            var motorcycledeleteResponse = await MotorcycleUseCase.Delete(motorcycleDeleteRequest);
+
+            if (motorcycledeleteResponse.IsSuccess)
+                return Ok(motorcycledeleteResponse);
+
+            return BadRequest(motorcycledeleteResponse);
+        }        
     }
 }

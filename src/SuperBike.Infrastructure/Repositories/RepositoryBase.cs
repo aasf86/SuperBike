@@ -53,20 +53,19 @@ namespace SuperBike.Infrastructure.Repositories
             _dbTransaction = dbTransaction;
         }
 
-        public virtual async Task Delete(int id)
+        public virtual async Task<bool> Delete(int id)
         {
-            await DbTransaction.Connection.ExecuteAsync(SqlDelete, new { id });
+            return (await DbTransaction.Connection.ExecuteAsync(SqlDelete, new { id })) > 0;
         }
 
         public virtual async Task<List<TEntity?>> GetAll(dynamic filter)
         {
-            return default;
-            //return (await DbConnection.GetAllAsync<TEntity?>()).ToList();
+            return default;            
         }
 
         public virtual async Task<TEntity?> GetById(int id)
         {            
-            return await DbTransaction.Connection.QuerySingleAsync<TEntity?>($"{SqlSelect}", new { id });
+            return await DbTransaction.Connection.QuerySingleOrDefaultAsync<TEntity?>($"{SqlSelect}", new { id });
         }
 
         public virtual async Task Insert(TEntity entity)

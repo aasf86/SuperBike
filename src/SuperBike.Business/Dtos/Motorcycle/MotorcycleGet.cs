@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Dynamic;
 using static SuperBike.Domain.Entities.Motorcycle;
 
 namespace SuperBike.Business.Dtos.Motorcycle

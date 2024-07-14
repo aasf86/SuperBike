@@ -6,9 +6,8 @@ using SuperBike.Auth.Business;
 using SuperBike.Auth.Config;
 using SuperBike.Auth.Context;
 using SuperBike.Business.Contracts.UseCases.User;
+using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.User;
-using SuperBike.Business.Dtos.User.Request;
-using SuperBike.Business.Dtos.User.Response;
 using System.Data;
 using System.Data.Common;
 using System.IdentityModel.Tokens.Jwt;
@@ -46,7 +45,7 @@ namespace SuperBike.Business.UseCases.User
             TransactionAssigner.Add(transaction => authIdentityDbContext.Database.UseTransaction(transaction as DbTransaction));
         }
 
-        public async Task<UserInsertResponse> Insert(UserInsertRequest userInsertRequest)
+        public async Task<ResponseBase<UserInsert>> Insert(RequestBase<UserInsert> userInsertRequest)
         {
 
             try
@@ -54,7 +53,7 @@ namespace SuperBike.Business.UseCases.User
                 "Iniciando [insert] de usuário: {LoginUserName}".LogInf(userInsertRequest.Data.LoginUserName);
 
                 var user = userInsertRequest.Data;
-                var userInsertResponse = new UserInsertResponse(user) { RequestId = userInsertRequest.RequestId };
+                var userInsertResponse = ResponseBase.New(user, userInsertRequest.RequestId);
                 var result = Validate(user);
 
                 if (!result.IsSuccess)
@@ -104,21 +103,21 @@ namespace SuperBike.Business.UseCases.User
                 "Erro ao [inserir] usuário: {LoginUserName}".LogErr(userInsertRequest.Data.LoginUserName);
                 exc.Message.LogErr(exc);
 
-                var userInsertResponse = new UserInsertResponse(userInsertRequest.Data) { RequestId = userInsertRequest.RequestId };
+                var userInsertResponse = ResponseBase.New(userInsertRequest.Data, userInsertRequest.RequestId);
                 userInsertResponse.Errors.Add(exc.Message);
                 return userInsertResponse;
             }
 
         }
 
-        public async Task<UserLoginResponse> Login(UserLoginRequest userLoginRequest)
+        public async Task<ResponseBase<UserLogin>> Login(RequestBase<UserLogin> userLoginRequest)
         {
             try
             {
                 "Iniciando 'login' de usuário: {LoginUserName}".LogInf(userLoginRequest.Data.LoginUserName);
 
                 var user = userLoginRequest.Data;
-                var userLoginResponse = new UserLoginResponse(new UserLogin { LoginUserName = user.LoginUserName }) { RequestId = userLoginRequest.RequestId };
+                var userLoginResponse = ResponseBase.New(new UserLogin(user.LoginUserName, null), userLoginRequest.RequestId);
 
                 var result = await SignInManager.PasswordSignInAsync(user.LoginUserName, user.Password, false, true);
                 if (result.Succeeded)
@@ -143,66 +142,23 @@ namespace SuperBike.Business.UseCases.User
                 "Erro no [login] usuário: {LoginUserName}".LogErr(userLoginRequest.Data.LoginUserName);
                 exc.Message.LogErr(exc);
 
-                var userLoginResponse = new UserLoginResponse(userLoginRequest.Data) { RequestId = userLoginRequest.RequestId };
+                var userLoginResponse = ResponseBase.New(userLoginRequest.Data, userLoginRequest.RequestId);
                 userLoginResponse.Errors.Add(exc.Message);                
                 return userLoginResponse;
             }
             
         }
 
-        /*
-        public override Task UnitOfWorkCommand(Func<Task> command)
-        {
-            return base.UnitOfWorkCommand(command);
-        }
-        
-        private override async Task UnitOfWorkCommand(Func<Task> command)
-        {            
-            using var transaction = await AuthIdentityDbContext.Database.BeginTransactionAsync();
-
-            try
-            {
-                await command();
-                await transaction.CommitAsync();                
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
-        }
-        */
-        /*
-        public override async Task UnitOfWorkExecute(Func<Task> execute)
-        {
-            using var transaction = await AuthIdentityDbContext.Database.BeginTransactionAsync();
-
-            try
-            {
-                await execute();
-                transaction.Commit();
-            }
-            catch
-            {
-                transaction.Rollback();
-                throw;
-            }
-        }
-        */
-        private async Task<UserLoginResponse> GenerateToken(string email)
+        private async Task<ResponseBase<UserLogin>> GenerateToken(string email)
         {
             var user = await UserManager.FindByEmailAsync(email);
             var accessTokenClaims = await GetLocalClaims(user ?? new IdentityUser());
 
             var expirationAccessToken = DateTime.Now.AddSeconds(JwtOptions.AccessTokenExpiration);
 
-            var accessToken = StrToken(accessTokenClaims, expirationAccessToken);            
+            var accessToken = StrToken(accessTokenClaims, expirationAccessToken);
 
-            return new UserLoginResponse
-            (
-                new UserLogin { LoginUserName = email },
-                accessToken                
-            );
+            return ResponseBase.New(new UserLogin(email, accessToken), Guid.Empty);
         }
 
         private async Task<IList<Claim>> GetLocalClaims(IdentityUser user)

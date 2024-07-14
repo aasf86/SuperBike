@@ -1,27 +1,27 @@
 ﻿using Dapper;
 using SuperBike.Domain.Contracts.Repositories.Motorcycle;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Entity = SuperBike.Domain.Entities;
 
 namespace SuperBike.Infrastructure.Repositories.Motorcycle
 {
     public class MotorcycleRepository : RepositoryBase<Entity.Motorcycle>, IMotorcycleRepository
     {
-        public async Task<Entity.Motorcycle?> GetByPlate(string plate)
+        public async Task<Entity.Motorcycle?> GetByPlate(string plate, int? notId = null)
         {
             var sql = $@"
                 select * 
                 from {nameof(Entity.Motorcycle)} 
                 where plate = @plate
             ";
+            dynamic param = new { plate };
 
-            return await DbTransaction.Connection.QuerySingleOrDefaultAsync<Entity.Motorcycle>(sql, new { plate });            
+            if (notId.GetValueOrDefault() > 0)
+            {
+                sql += " and id <> @notId";
+                param = new { plate, notId };
+            }
+
+            return await DbTransaction.Connection.QuerySingleOrDefaultAsync<Entity.Motorcycle>(sql, param as object);
         }
     }
 }
