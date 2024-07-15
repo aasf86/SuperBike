@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SuperBike.Auth.Business;
 using SuperBike.Business.Contracts.UseCases.Motorcycle;
 using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.Motorcycle;
@@ -34,6 +35,9 @@ namespace SuperBike.Business.UseCases.Motorcycle
         {
             try
             {
+                //aasf86 Authorize
+                //if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
+
                 "Inciando [Insert] de motocicleta: {Plate}".LogInf(motorcycleInsertRequest.Data.Plate);
 
                 var motocycleInsert = motorcycleInsertRequest.Data;
@@ -54,29 +58,32 @@ namespace SuperBike.Business.UseCases.Motorcycle
                 {                    
                     var motorcycleFromDb = await MotorcycleRepository.GetByPlate(motocycleInsert.Plate);
 
-                    if (motorcycleFromDb is null)
+                    if (motorcycleFromDb is not null)
                     {
-                        await MotorcycleRepository.Insert(motorcycleEntity);
+                        var strMsg = string.Format(MotorcycleMsgDialog.AlreadyRegistered, motorcycleFromDb?.Model);
+                        motorcycleInsertResponse.Errors.Add(strMsg);
+                        strMsg.LogWrn(motorcycleFromDb?.Model);                        
                         return;
                     }
-                    
-                    var strMsg = string.Format(MotorcycleMsgDialog.AlreadyRegistered, motorcycleFromDb?.Model);
-                    motorcycleInsertResponse.Errors.Add(strMsg);
-                    strMsg.LogWrn(motorcycleFromDb?.Model);                    
+
+                    await MotorcycleRepository.Insert(motorcycleEntity);
+
+                    var eventMotorcycleInserted = new MotorcycleInserted
+                    {
+                        Id = motorcycleEntity.Id,
+                        RequestId = motorcycleInsertRequest.RequestId,
+                        WhenEvent = motorcycleEntity.Inserted,
+                        FromApp = motorcycleInsertRequest.From,
+                        Version = motorcycleInsertRequest.Version,
+                        Model = motorcycleEntity.Model,
+                        Plate = motorcycleEntity.Plate,
+                        Year = motorcycleEntity.Year
+                    };
+
+                    "Publicando evento: {Plate} {RequestId}".LogInf(motorcycleInsertRequest.Data.Plate, motorcycleInsertRequest.RequestId);
+
+                    await MessageBroker.Publish(eventMotorcycleInserted, Queues.Motorcycle.MOTORCYCLE_INSERTED);
                 });
-
-                var eventMotorcycleInserted = new MotorcycleInserted 
-                { 
-                    Id = motorcycleEntity.Id,
-                    Date = motorcycleEntity.Inserted,
-                    From = motorcycleInsertRequest.From,
-                    Version = motorcycleInsertRequest.Version,
-                    Model = motorcycleEntity.Model,
-                    Plate = motorcycleEntity.Plate,
-                    Year = motorcycleEntity.Year
-                };
-
-                await MessageBroker.Publish(eventMotorcycleInserted, Queues.Motorcycle.MOTORCYCLE_INSERTED);
 
                 return motorcycleInsertResponse;
             }
@@ -95,6 +102,9 @@ namespace SuperBike.Business.UseCases.Motorcycle
         {
             try
             {
+                //aasf86 Authorize
+                //if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
+
                 "Inciando [GetByPlate] de motocicleta: {Plate}".LogInf(motorcycleGetRequest.Data.Plate);                
 
                 var motorcycleGet = motorcycleGetRequest.Data;
@@ -142,6 +152,9 @@ namespace SuperBike.Business.UseCases.Motorcycle
         {
             try
             {
+                //aasf86 Authorize
+                //if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
+
                 "Inciando [Update] de motocicleta: {Plate}".LogInf(motorcycleUpdateRequest.Data.Plate);
 
                 var motorcycleUpdate = motorcycleUpdateRequest.Data;
@@ -205,6 +218,9 @@ namespace SuperBike.Business.UseCases.Motorcycle
         {
             try
             {
+                //aasf86 Authorize
+                //if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
+
                 "Inciando [Delete] de motocicleta: {Id}".LogInf(motorcycleDeleteRequest.Data.Id);
 
                 var motorcycleDelete = motorcycleDeleteRequest.Data;

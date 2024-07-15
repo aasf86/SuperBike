@@ -1,0 +1,6 @@
+@SuperBike.Consumer_HostAddress = http://localhost:5010
+
+GET {{SuperBike.Consumer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

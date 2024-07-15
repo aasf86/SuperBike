@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SuperBike.Auth.Business;
 using SuperBike.Business.UseCases.Validators;
 using SuperBike.Infrastructure;
 using System.ComponentModel.DataAnnotations;
@@ -22,6 +23,12 @@ namespace SuperBike.Business.UseCases
             var result = Validator.TryValidateObject(entity, valid, valids, true);            
             
             return new ResultValidation(valids);
+        }
+
+        public bool IsInRole(string role)
+        {
+            if (Thread.CurrentPrincipal is null) return false;
+            return Thread.CurrentPrincipal.IsInRole(role);
         }
     }
     internal static class LogUseCase

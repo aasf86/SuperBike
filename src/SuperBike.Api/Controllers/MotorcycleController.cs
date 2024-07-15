@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using SuperBike.Business.Contracts.UseCases.Motorcycle;
 using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.Motorcycle;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,7 +25,12 @@ namespace SuperBike.Api.Controllers
         /// Controller para gestão de cadastros de motocicletas.
         /// </summary>
         /// <param name="motorcycleUseCase"></param>
-        public MotorcycleController(IMotorcycleUseCase motorcycleUseCase) => _motorcycleUseCase = motorcycleUseCase;
+        public MotorcycleController(IMotorcycleUseCase motorcycleUseCase)
+        {
+            _motorcycleUseCase = motorcycleUseCase;
+            Thread.CurrentPrincipal = User;
+            //Thread.CurrentPrincipal = new ClaimsPrincipal(User.Identity);
+        }
         
         /// <summary>
         /// Inserir nova motocicleta.
