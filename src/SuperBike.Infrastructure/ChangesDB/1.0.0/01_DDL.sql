@@ -103,3 +103,20 @@ create table motorcycle
     model varchar(100) not null,
     plate varchar(7) not null unique
 );
+
+create table events_motorcycle_inserted
+(
+	id bigserial not null primary key,
+    inserted timestamp without time zone default now(),    
+    guid uuid, 
+    requestid uuid, 
+    fromapp varchar(100),
+    version varchar(100),
+    whenevent timestamp without time zone,
+    queue varchar(300),
+    mq varchar(300),
+    motorcycleid bigserial,
+    year integer ,
+    model varchar(100),
+    plate varchar(7)
+);
