@@ -48,6 +48,9 @@ namespace SuperBike.Business.UseCases.Renter
                 }
 
                 var renterEntity = new Entity.Renter(renterInsert.Name, renterInsert.CnpjCpf, renterInsert.DateOfBirth, renterInsert.CNH, renterInsert.CNHType, renterInsert.CNHImg);
+                
+                //aasf86 Relacionar com o usuario logado no request
+                //renterEntity.UserId = renterInsert.UserId;
 
                 await UnitOfWorkExecute(async () => 
                 {                    
@@ -57,6 +60,9 @@ namespace SuperBike.Business.UseCases.Renter
                         renterInsertResponse.Errors.Add(strErro);
                         strErro.LogWrn();
                     });
+
+                    //aasf86 Verificar se usuario já está relacionado a algum alugador/entregador
+                    //var renterFromDbByUserId = await RenterRepository.GetByUserId(renterInsert.UserId);
 
                     var renterFromDbByCnpjCpf = await RenterRepository.GetByCnpjCpf(renterInsert.CnpjCpf);
 
