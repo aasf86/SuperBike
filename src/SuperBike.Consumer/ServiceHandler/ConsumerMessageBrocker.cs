@@ -51,6 +51,7 @@ namespace SuperBike.Consumer.ServiceHandler
                             motorcycleInsertedEvent.Id = 0;
                             await _dataAccess.Insert(motorcycleInsertedEvent);
                         }
+                        body = null;
                     }
                     catch (Exception exc)
                     {
