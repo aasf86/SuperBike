@@ -21,7 +21,7 @@ namespace SuperBike.Infrastructure.Repositories.Motorcycle
                 param = new { plate, notId };
             }
 
-            return await DbTransaction.Connection.QuerySingleOrDefaultAsync<Entity.Motorcycle>(sql, param as object);
+            return await DbTransaction.Connection.QuerySingleOrDefaultAsync<Entity.Motorcycle?>(sql, param as object);
         }
     }
 }

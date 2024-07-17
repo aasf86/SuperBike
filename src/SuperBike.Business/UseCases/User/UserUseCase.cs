@@ -79,7 +79,7 @@ namespace SuperBike.Business.UseCases.User
                     {
                         await UserManager.SetLockoutEnabledAsync(identityUser, false);
 
-                        var resultAddUserRole = await UserManager.AddToRoleAsync(identityUser, RoleTypeSuperBike.Deliveryman);
+                        var resultAddUserRole = await UserManager.AddToRoleAsync(identityUser, RoleTypeSuperBike.RenterDeliveryman);
 
                         if (!resultAddUserRole.Succeeded)
                         {

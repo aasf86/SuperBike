@@ -20,7 +20,7 @@ namespace SuperBike.Business.UseCases
 
             var valid = new ValidationContext(entity);
             var valids = new List<ValidationResult>();
-            var result = Validator.TryValidateObject(entity, valid, valids, true);            
+            var result = Validator.TryValidateObject(entity, valid, valids, true);
             
             return new ResultValidation(valids);
         }

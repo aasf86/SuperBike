@@ -120,3 +120,17 @@ create table events_motorcycle_inserted
     model varchar(100),
     plate varchar(7)
 );
+
+create table renter
+(
+	id bigserial not null primary key,
+    guid uuid DEFAULT gen_random_uuid(), 
+    inserted timestamp without time zone NOT NULL DEFAULT now(),
+    updated timestamp without time zone NOT NULL DEFAULT now(),
+    name varchar(100) not null,
+    dateofbirth timestamp without time zone NOT NULL,
+    cnpjcpf varchar(14) not null unique,
+    cnh varchar(11) not null unique,
+    cnhtype varchar(2) not null,
+    cnhimg varchar(500) not null
+);

@@ -40,23 +40,23 @@ namespace SuperBike.Business.UseCases.Motorcycle
 
                 "Inciando [Insert] de motocicleta: {Plate}".LogInf(motorcycleInsertRequest.Data.Plate);
 
-                var motocycleInsert = motorcycleInsertRequest.Data;
-                var motorcycleInsertResponse = ResponseBase.New(motocycleInsert, motorcycleInsertRequest.RequestId);
-                var result = Validate(motocycleInsert);
+                var motorcycleInsert = motorcycleInsertRequest.Data;
+                var motorcycleInsertResponse = ResponseBase.New(motorcycleInsert, motorcycleInsertRequest.RequestId);
+                var result = Validate(motorcycleInsert);
 
                 if (!result.IsSuccess)
                 {
                     motorcycleInsertResponse.Errors.AddRange(result.Validation.Select(x => x.ErrorMessage).ToList());
                     var errors = string.Join("\n", motorcycleInsertResponse.Errors.ToArray());
-                    $"Motocicleta inválida '{{Plate}}': {errors} ".LogWrn(motocycleInsert.Plate);                    
+                    $"Motocicleta inválida '{{Plate}}': {errors} ".LogWrn(motorcycleInsert.Plate);                    
                     return motorcycleInsertResponse;
                 }
 
-                var motorcycleEntity = new Entity.Motorcycle(motocycleInsert.Year, motocycleInsert.Model, motocycleInsert.Plate);
+                var motorcycleEntity = new Entity.Motorcycle(motorcycleInsert.Year, motorcycleInsert.Model, motorcycleInsert.Plate);
 
                 await UnitOfWorkExecute(async () =>
                 {                    
-                    var motorcycleFromDb = await MotorcycleRepository.GetByPlate(motocycleInsert.Plate);
+                    var motorcycleFromDb = await MotorcycleRepository.GetByPlate(motorcycleInsert.Plate);
 
                     if (motorcycleFromDb is not null)
                     {
