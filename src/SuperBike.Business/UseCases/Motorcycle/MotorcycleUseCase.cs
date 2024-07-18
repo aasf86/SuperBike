@@ -153,8 +153,9 @@ namespace SuperBike.Business.UseCases.Motorcycle
         {
             try
             {
-                //aasf86 Authorize
-                //if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
+#if !DEBUG
+                if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
+#endif
 
                 "Inciando [Update] de motocicleta: {Plate}".LogInf(motorcycleUpdateRequest.Data.Plate);
 
@@ -219,9 +220,9 @@ namespace SuperBike.Business.UseCases.Motorcycle
         {
             try
             {
-                //aasf86 Authorize
-                //if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
-
+#if !DEBUG
+                if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
+#endif
                 "Inciando [Delete] de motocicleta: {Id}".LogInf(motorcycleDeleteRequest.Data.Id);
 
                 var motorcycleDelete = motorcycleDeleteRequest.Data;

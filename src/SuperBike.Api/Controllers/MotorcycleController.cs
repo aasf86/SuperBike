@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SuperBike.Auth.Business;
 using SuperBike.Business.Contracts.UseCases.Motorcycle;
 using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.Motorcycle;
