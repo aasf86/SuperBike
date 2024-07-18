@@ -1,0 +1,6 @@
+@SuperBike.Api.FileStorage_HostAddress = http://localhost:5004
+
+GET {{SuperBike.Api.FileStorage_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

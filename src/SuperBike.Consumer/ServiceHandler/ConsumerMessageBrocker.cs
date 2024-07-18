@@ -9,8 +9,8 @@ namespace SuperBike.Consumer.ServiceHandler
 {
     public class ConsumerMessageBrocker : BackgroundService
     {
-        ILogger<ConsumerMessageBrocker> _logger;
-        DataAccessEvent _dataAccess;
+        private readonly ILogger<ConsumerMessageBrocker> _logger;
+        private readonly DataAccessEvent _dataAccess;
         public ConsumerMessageBrocker(ILogger<ConsumerMessageBrocker> logger, DataAccessEvent dataAccess)
         {
             _logger = logger;
