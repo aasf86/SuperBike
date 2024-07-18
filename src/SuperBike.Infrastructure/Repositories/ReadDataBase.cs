@@ -10,15 +10,8 @@ namespace SuperBike.Infrastructure.Repositories
         private IDbTransaction _dbTransaction;
         internal IDbTransaction DbTransaction => _dbTransaction;
 
-        private Type _typeEntity = typeof(TEntity);
-        private Type TypeEntity => _typeEntity;
-
         private string? _SqlSelect;
-        private string SqlSelect => _SqlSelect = _SqlSelect ?? $@"
-            select * 
-            from {TypeEntity.Name} 
-            where id = @id
-        ";
+        private string SqlSelect => _SqlSelect = _SqlSelect ?? Helpers.StrSql.CreateSqlSelect<TEntity>();
 
         public virtual void SetTransaction(IDbTransaction dbTransaction)
         {

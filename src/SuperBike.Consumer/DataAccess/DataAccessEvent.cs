@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using Npgsql;
-using System.ComponentModel.DataAnnotations.Schema;
+using SuperBike.Infrastructure.Repositories;
 using System.Data;
 
 namespace SuperBike.Consumer.DataAccess
@@ -15,35 +15,15 @@ namespace SuperBike.Consumer.DataAccess
         private readonly IDbConnection _connection;
         public DataAccessEvent(IDbConnection connection) => _connection = connection;
 
-        public async Task Insert(object @event)
+        public async Task Insert<T>(T @event)
         {
-            var type = @event.GetType();
-            var propertiesEntity = type
-                .GetProperties()
-                .OrderBy(p => p.Name.ToLower())
-                .Where(x => x.Name.ToLower() != "id")
-                .Select(x => x.Name)
-                .ToList();
-            var attrTable = type.GetCustomAttributes(true).SingleOrDefault(x => x is TableAttribute) as TableAttribute;
-
-
-            var sql = $@"
-                insert into {attrTable.Name} ({string.Join(", ", propertiesEntity)})
-                values ({string.Join(", ", propertiesEntity.Select(x => $"@{x}"))}) returning id";
-
+            var sql = Helpers.StrSql.CreateSqlInsert<T>();
             await _connection.ExecuteScalarAsync(sql, @event);
         }
 
         public async Task<IEnumerable<T>> GetAll<T>()
         {
-            var type = typeof(T);
-            var attrTable = type.GetCustomAttributes(true).SingleOrDefault(x => x is TableAttribute) as TableAttribute;
-
-            var sql = $@"
-                select * 
-                from {attrTable.Name}
-            ";
-
+            var sql = Helpers.StrSql.CreateSqlSelect<T>("0=0");
             return await _connection.QueryAsync<T>(sql);
         }
 

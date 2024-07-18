@@ -5,17 +5,17 @@ namespace SuperBike.Business.Dtos.Motorcycle
 {
     public class MotorcycleInsert
     {
-        [Range(MotorcycleRole.YearMinimalValue, int.MaxValue, ErrorMessage = MotorcycleMsgDialog.InvalidYear)]
+        [Range(MotorcycleRule.YearMinimalValue, int.MaxValue, ErrorMessage = MotorcycleMsgDialog.InvalidYear)]
         public int Year { get; set; }
 
-        [MinLength(MotorcycleRole.ModelMinimalLenth, ErrorMessage = MotorcycleMsgDialog.RequiredModel)]
+        [MinLength(MotorcycleRule.ModelMinimalLenth, ErrorMessage = MotorcycleMsgDialog.RequiredModel)]
         [Required(ErrorMessage = MotorcycleMsgDialog.RequiredModel)]
         [MaxLength(100, ErrorMessage = MotorcycleMsgDialog.InvalidModel )]
         public string Model { get; set; } = "";
 
-        [MinLength(MotorcycleRole.PlateMinimalLenth, ErrorMessage = MotorcycleMsgDialog.InvalidPlate)]
+        [MinLength(MotorcycleRule.PlateMinimalLenth, ErrorMessage = MotorcycleMsgDialog.InvalidPlate)]
         [Required(ErrorMessage = MotorcycleMsgDialog.RequiredPlate)]
-        [MaxLength(MotorcycleRole.PlateMaxLenth, ErrorMessage = MotorcycleMsgDialog.InvalidPlate)]
+        [MaxLength(MotorcycleRule.PlateMaxLenth, ErrorMessage = MotorcycleMsgDialog.InvalidPlate)]
         public string Plate { get; set; } = "";
     }
 }

@@ -8,11 +8,8 @@ namespace SuperBike.Infrastructure.Repositories.Motorcycle
     {
         public async Task<Entity.Motorcycle?> GetByPlate(string plate, int? notId = null)
         {
-            var sql = $@"
-                select * 
-                from {nameof(Entity.Motorcycle)} 
-                where plate = @plate
-            ";
+            var sql = Helpers.StrSql.CreateSqlSelect<Entity.Motorcycle>("plate = @plate");                
+
             dynamic param = new { plate };
 
             if (notId.GetValueOrDefault() > 0)

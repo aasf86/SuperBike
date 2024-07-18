@@ -45,7 +45,7 @@ namespace SuperBike.Api.Controllers
                 if (User is not null) Thread.CurrentPrincipal = new ClaimsPrincipal(User.Identity);
 
                 var renterInsertRequest = RequestBase.New(renter, "host:api", "1.0");
-                renter.UserId = User.FindAll(ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+                renter.SetUser(User.FindAll(ClaimTypes.NameIdentifier).FirstOrDefault().Value);
 
                 var renterInsertResponse = await RenterUseCase.Insert(renterInsertRequest);
 
@@ -69,6 +69,8 @@ namespace SuperBike.Api.Controllers
             if (ModelState.IsValid)
             {
                 var renterUpdateRequest = RequestBase.New(renter, "host:api", "1.0");
+                renter.SetUser(User.FindAll(ClaimTypes.NameIdentifier).FirstOrDefault().Value);
+
                 var renterUpdateResponse = await RenterUseCase.Update(renterUpdateRequest);
 
                 if (renterUpdateResponse.IsSuccess)

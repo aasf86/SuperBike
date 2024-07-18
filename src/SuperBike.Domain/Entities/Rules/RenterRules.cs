@@ -1,8 +1,8 @@
-﻿namespace SuperBike.Domain.Entities
+﻿namespace SuperBike.Domain.Entities.Rules
 {
     public partial class Renter
     {
-        public static class RenterRole
+        public static class RenterRule
         {
             public const int NameMinimalLenth = 3;
             public static string[] TypesCNHAllowed = ["A", "B", "AB"];
@@ -27,6 +27,8 @@
             public const string AlreadyRegistered = "Alugador/entregador já cadastrado.";
             public const string RequiredUserId = "Obrigatório usuário ao alugador/entregador.";
             public const string InvalidContentType = "Tipo de arquivo inválido.";
+            public const string RequiredCNHImg = "Informe a imagem da CNH.";
+            public const string MotRegistered = "Alugador/entregador não registrado.";
         }        
     }
 }

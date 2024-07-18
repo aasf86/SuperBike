@@ -3,11 +3,9 @@ using SuperBike.Auth.Business;
 using SuperBike.Business.Contracts.UseCases.Renter;
 using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.Renter;
-using SuperBike.Business.UseCases.Validators;
 using SuperBike.Domain.Contracts.Repositories.Renter;
 using System.Data;
-using static SuperBike.Domain.Entities.Motorcycle;
-using static SuperBike.Domain.Entities.Renter;
+using static SuperBike.Domain.Entities.Rules.Renter;
 using Entity = SuperBike.Domain.Entities;
 
 namespace SuperBike.Business.UseCases.Renter
@@ -82,6 +80,14 @@ namespace SuperBike.Business.UseCases.Renter
                         return;
                     }
 
+                    var renterFromDbByUserId = await RenterRepository.GetByUserId(renterInsert.UserId);
+
+                    if (renterFromDbByUserId is not null) 
+                    {
+                        addErros(nameof(renterInsert.UserId), renterInsert.UserId);
+                        return;
+                    }
+
                     await RenterRepository.Insert(renterEntity);
 
                 });
@@ -101,9 +107,55 @@ namespace SuperBike.Business.UseCases.Renter
             
         }
 
-        public Task<ResponseBase<RenterUpdate>> Update(RequestBase<RenterUpdate> request)
+        public async Task<ResponseBase<RenterUpdate>> Update(RequestBase<RenterUpdate> renterUpdateRequest)
         {
-            throw new NotImplementedException();
+            try
+            {
+#if !DEBUG
+                if (!IsInRole(RoleTypeSuperBike.RenterDeliveryman)) throw new UnauthorizedAccessException();
+#endif
+
+                "Inciando [Update] de imagem da CNH alugador/entregador UserId: {UserId}".LogInf(renterUpdateRequest.Data.UserId);
+
+                var renterUpdate = renterUpdateRequest.Data;
+                var renterUpdateResponse = ResponseBase.New(renterUpdate, renterUpdateRequest.RequestId);
+                var result = Validate(renterUpdate);
+
+                if (!result.IsSuccess)
+                {
+                    renterUpdateResponse.Errors.AddRange(result.Validation.Select(x => x.ErrorMessage).ToList());
+                    var errors = string.Join("\n", renterUpdateResponse.Errors.ToArray());
+                    $"Alugador/entregador inválido '{{UserId}}': {errors} ".LogWrn(renterUpdate.UserId);
+                    return renterUpdateResponse;
+                }
+
+                await UnitOfWorkExecute(async () =>
+                {
+                    var renterFromDb = await RenterRepository.GetByUserId(renterUpdate.UserId);
+
+                    if (renterFromDb is null) 
+                    {
+                        renterUpdateResponse.Errors.Add(RenterMsgDialog.MotRegistered);
+                        return;
+                    }
+
+                    renterFromDb.SetCNHImg(renterUpdate.CNHImg);
+
+                    await RenterRepository.Update(renterFromDb);
+
+                });
+
+                return renterUpdateResponse;
+            }
+            catch (Exception exc)
+            {
+                "Erro no [Update] alugador/entregador: {UserId}".LogErr(renterUpdateRequest.Data.UserId);
+                exc.Message.LogErr(exc);
+
+                var motorcycleInsertResponse = ResponseBase.New(renterUpdateRequest.Data, renterUpdateRequest.RequestId);
+                motorcycleInsertResponse.Errors.Add(exc.Message);
+                return motorcycleInsertResponse;
+            }
         }
     }
 }

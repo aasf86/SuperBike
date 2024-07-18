@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static SuperBike.Domain.Entities.Renter;
+using static SuperBike.Domain.Entities.Rules.Renter;
 
 namespace SuperBike.Business.Dtos.Renter
 {
@@ -15,7 +10,7 @@ namespace SuperBike.Business.Dtos.Renter
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (!RenterRole.ImagesAllowedContentType.Contains(File.ContentType))
+            if (!RenterRule.ImagesAllowedContentType.Contains(File.ContentType))
                 yield return new ValidationResult(RenterMsgDialog.InvalidContentType, ["ContentType"]);
         }
     }

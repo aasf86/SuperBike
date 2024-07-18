@@ -1,5 +1,6 @@
 ﻿using SuperBike.Domain.Entities.ValueObjects.Renter;
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using static SuperBike.Domain.Entities.Rules.Renter;
 
 namespace SuperBike.Domain.Entities
 {
@@ -11,18 +12,18 @@ namespace SuperBike.Domain.Entities
             long result = 0;
 
             if (string.IsNullOrEmpty(name) 
-                || name.Length < RenterRole.NameMinimalLenth
+                || name.Length < RenterRule.NameMinimalLenth
             ) throw new InvalidDataException(RenterMsgDialog.RequiredName);
 
             if (string.IsNullOrEmpty(cnpjCpf)
             ) throw new InvalidDataException(RenterMsgDialog.RequiredCnpjCpf);
 
-            if (cnpjCpf.Length < RenterRole.CnpjCpfMinimalLenth
-                || cnpjCpf.Length > RenterRole.CnpjCpfMaxLenth
+            if (cnpjCpf.Length < RenterRule.CnpjCpfMinimalLenth
+                || cnpjCpf.Length > RenterRule.CnpjCpfMaxLenth
             ) throw new InvalidDataException(RenterMsgDialog.InvalidCnpjCpf);
 
-            if (!(cnpjCpf.Length == RenterRole.CnpjCpfMaxLenth 
-                || cnpjCpf.Length == RenterRole.CnpjCpfMinimalLenth)
+            if (!(cnpjCpf.Length == RenterRule.CnpjCpfMaxLenth 
+                || cnpjCpf.Length == RenterRule.CnpjCpfMinimalLenth)
             ) throw new InvalidDataException(RenterMsgDialog.InvalidCnpjCpf);
 
             if (!long.TryParse(cnpjCpf, out result))
@@ -32,7 +33,7 @@ namespace SuperBike.Domain.Entities
             if (string.IsNullOrEmpty(cnh)) throw new InvalidDataException(RenterMsgDialog.RequiredCNH);
             if (!long.TryParse(cnh, out result)) throw new InvalidDataException(RenterMsgDialog.InvalidCNH);
             if (string.IsNullOrEmpty(cnhType)) throw new InvalidDataException(RenterMsgDialog.RequiredCNHType);
-            if (!RenterRole.TypesCNHAllowed.Contains(cnhType)) throw new InvalidDataException(RenterMsgDialog.InvalidCNHType);
+            if (!RenterRule.TypesCNHAllowed.Contains(cnhType)) throw new InvalidDataException(RenterMsgDialog.InvalidCNHType);
             if (string.IsNullOrEmpty(userId)) throw new InvalidDataException(RenterMsgDialog.RequiredUserId);
 
             Name = name;
@@ -49,7 +50,16 @@ namespace SuperBike.Domain.Entities
         public string CNH { get; private set; } = "";
         public string CNHType { get; private set; } = "";
         public string? CNHImg { get; private set; }
-        public FileDisk? CNHFile { get; private set; }
         public string UserId { get; private set; } = "";
+
+        [NotMapped]
+        public FileDisk? CNHFile { get; private set; }        
+
+        public void SetCNHImg(string cnhImg)
+        {
+            if (string.IsNullOrEmpty(cnhImg)) throw new InvalidDataException(RenterMsgDialog.RequiredCNHImg);
+            CNHImg = cnhImg;
+            Updated = DateTime.Now;
+        }
     }
 }

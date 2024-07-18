@@ -140,8 +140,7 @@ create table filedisk
 (
 	id bigserial not null primary key,
     guid uuid DEFAULT gen_random_uuid(), 
-    inserted timestamp without time zone NOT NULL DEFAULT now(),
-    
+    inserted timestamp without time zone NOT NULL DEFAULT now(),    
     key varchar(50) not null unique,
     filename varchar(200) not null,
     length numeric not null,

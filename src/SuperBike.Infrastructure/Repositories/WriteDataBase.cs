@@ -8,35 +8,16 @@ namespace SuperBike.Infrastructure.Repositories
     public abstract class WriteDataBase<TEntity> : IWriteData<TEntity> where TEntity : EntityBase
     {
         private IDbTransaction _dbTransaction;
-        internal IDbTransaction DbTransaction => _dbTransaction;
-
-        private Type _typeEntity = typeof(TEntity);
-        private Type TypeEntity => _typeEntity;
-
-        private List<string> PropertiesEntity => TypeEntity
-            .GetProperties()
-            .OrderBy(p => p.Name.ToLower())
-            .Where(x => x.Name.ToLower() != "id")
-            .Select(x => x.Name)
-            .ToList();
+        internal IDbTransaction DbTransaction => _dbTransaction;        
 
         private string? _sqlInsert;
-        private string SqlInsert => _sqlInsert = _sqlInsert ?? $@"
-            insert into {TypeEntity.Name} ({string.Join(", ", PropertiesEntity)})
-            values ({string.Join(", ", PropertiesEntity.Select(x => $"@{x}"))}) returning id
-        ";
+        private string SqlInsert => _sqlInsert = _sqlInsert ?? Helpers.StrSql.CreateSqlInsert<TEntity>();
 
         private string? _sqlUdapte;
-        private string SqlUdapte => _sqlUdapte = _sqlUdapte ?? $@"
-            update {TypeEntity.Name}
-            set {string.Join(", ", PropertiesEntity.Select(x => $"{x} = @{x}"))}
-            where id = @id
-        ";
+        private string SqlUdapte => _sqlUdapte = _sqlUdapte ?? Helpers.StrSql.CreateSqlUpdate<TEntity>();
 
-        private string SqlDelete => $@"
-            delete from {TypeEntity.Name} 
-            where id = @id
-        ";
+        private string? _sqlDelete;
+        private string SqlDelete => _sqlDelete = _sqlDelete ?? Helpers.StrSql.CreateSqlDelete<TEntity>();
 
         public virtual void SetTransaction(IDbTransaction dbTransaction)
         {

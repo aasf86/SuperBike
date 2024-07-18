@@ -2,7 +2,7 @@
 {
     public partial class Motorcycle
     {
-        public static class MotorcycleRole
+        public static class MotorcycleRule
         {
             public const int ModelMinimalLenth = 3;
             public const int ModelMaxLenth = 100;

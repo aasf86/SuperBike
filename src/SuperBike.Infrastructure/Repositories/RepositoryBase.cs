@@ -12,39 +12,17 @@ namespace SuperBike.Infrastructure.Repositories
         private IDbTransaction _dbTransaction;
         internal IDbTransaction DbTransaction => _dbTransaction;
 
-        private Type _typeEntity = typeof(TEntity);
-        private Type TypeEntity => _typeEntity;
-
-        private List<string> PropertiesEntity => TypeEntity
-            .GetProperties()
-            .OrderBy(p => p.Name.ToLower())
-            .Where(x => x.Name.ToLower() != "id")
-            .Select(x => x.Name)
-            .ToList();
-
         private string? _sqlInsert;
-        private string SqlInsert => _sqlInsert = _sqlInsert ?? $@"
-            insert into {TypeEntity.Name} ({string.Join(", ", PropertiesEntity)})
-            values ({string.Join(", ", PropertiesEntity.Select(x => $"@{x}"))}) returning id
-        ";
+        private string SqlInsert => _sqlInsert = _sqlInsert ?? Helpers.StrSql.CreateSqlInsert<TEntity>();
 
         private string? _sqlUdapte;
-        private string SqlUdapte => _sqlUdapte = _sqlUdapte ?? $@"
-            update {TypeEntity.Name}
-            set {string.Join(", ", PropertiesEntity.Select(x => $"{x} = @{x}"))}
-            where id = @id
-        ";
+        private string SqlUdapte => _sqlUdapte = _sqlUdapte ?? Helpers.StrSql.CreateSqlUpdate<TEntity>();
 
-        private string SqlDelete => $@"
-            delete from {TypeEntity.Name} 
-            where id = @id
-        ";
+        private string? _sqlDelete;
+        private string SqlDelete => _sqlDelete = _sqlDelete?? Helpers.StrSql.CreateSqlDelete<TEntity>();
 
-        private string SqlSelect => $@"
-            select * 
-            from {TypeEntity.Name} 
-            where id = @id
-        ";
+        private string? _sqlSelect;
+        private string SqlSelect => _sqlSelect = _sqlSelect ?? Helpers.StrSql.CreateSqlSelect<TEntity>();
 
         #endregion
 
@@ -65,7 +43,7 @@ namespace SuperBike.Infrastructure.Repositories
 
         public virtual async Task<TEntity?> GetById(int id)
         {            
-            return await DbTransaction.Connection.QuerySingleOrDefaultAsync<TEntity?>($"{SqlSelect}", new { id });
+            return await DbTransaction.Connection.QuerySingleOrDefaultAsync<TEntity?>(SqlSelect, new { id });
         }
 
         public virtual async Task Insert(TEntity entity)
