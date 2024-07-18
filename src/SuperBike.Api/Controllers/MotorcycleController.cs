@@ -12,8 +12,9 @@ namespace SuperBike.Api.Controllers
     /// <summary>
     /// Controller para gestão de cadastros de motocicletas.
     /// </summary>
-    //aasf86 Authorize
-    //[Authorize(Roles = RoleTypeSuperBike.Admin)]
+#if !DEBUG
+    [Authorize(Roles = RoleTypeSuperBike.Admin)]
+#endif
     [Route("api/[controller]")]
     [ApiController]
     public class MotorcycleController : ControllerBase
@@ -28,8 +29,6 @@ namespace SuperBike.Api.Controllers
         public MotorcycleController(IMotorcycleUseCase motorcycleUseCase)
         {
             _motorcycleUseCase = motorcycleUseCase;
-            Thread.CurrentPrincipal = User;
-            //Thread.CurrentPrincipal = new ClaimsPrincipal(User.Identity);
         }
         
         /// <summary>
@@ -42,6 +41,8 @@ namespace SuperBike.Api.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (User is not null) Thread.CurrentPrincipal = new ClaimsPrincipal(User.Identity);
+
                 var motorcycleInsertRequest = RequestBase.New(motorcycle, "host:api", "1.0");                
                 var motorcycleInsertResponse = await MotorcycleUseCase.Insert(motorcycleInsertRequest);
 

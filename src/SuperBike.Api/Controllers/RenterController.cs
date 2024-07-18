@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SuperBike.Auth.Business;
 using SuperBike.Business.Contracts.UseCases.Renter;
@@ -14,8 +13,9 @@ namespace SuperBike.Api.Controllers
     /// <summary>
     /// Controller para gestão de cadastros de entregador/alugador.
     /// </summary>
-    //aasf86 Authorize
-    //[Authorize(Roles = RoleTypeSuperBike.RenterDeliveryman)]
+#if !DEBUG
+    [Authorize(Roles = RoleTypeSuperBike.RenterDeliveryman)]
+#endif
     [Route("api/[controller]")]
     [ApiController]
     public class RenterController : ControllerBase
@@ -29,9 +29,7 @@ namespace SuperBike.Api.Controllers
         /// <param name="renterUseCase"></param>
         public RenterController(IRenterUseCase renterUseCase)
         {
-            _renterUseCase = renterUseCase;
-            Thread.CurrentPrincipal = User;
-            //Thread.CurrentPrincipal = new ClaimsPrincipal(User.Identity);
+            _renterUseCase = renterUseCase;            
         }
 
         /// <summary>
@@ -44,7 +42,11 @@ namespace SuperBike.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                var renterInsertRequest = RequestBase.New(renter, "host:api", "1.0");                
+                if (User is not null) Thread.CurrentPrincipal = new ClaimsPrincipal(User.Identity);
+
+                var renterInsertRequest = RequestBase.New(renter, "host:api", "1.0");
+                renter.UserId = User.FindAll(ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+
                 var renterInsertResponse = await RenterUseCase.Insert(renterInsertRequest);
 
                 if (renterInsertResponse.IsSuccess)

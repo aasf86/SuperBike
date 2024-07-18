@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using static SuperBike.Domain.Entities.Renter;
 
 namespace SuperBike.Business.Dtos.Renter
@@ -26,6 +27,9 @@ namespace SuperBike.Business.Dtos.Renter
         public string CNHType { get; set; } = "";
 
         public string? CNHImg { get; set; }
+
+        [NotMapped]
+        public string UserId { get; set; } = "";
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

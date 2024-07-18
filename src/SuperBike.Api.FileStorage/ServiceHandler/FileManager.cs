@@ -1,5 +1,5 @@
 ﻿using SuperBike.Api.FileStorage.DataAccess;
-using SuperBike.Api.FileStorage.Entities;
+using SuperBike.Domain.Entities.ValueObjects.Renter;
 
 namespace SuperBike.Api.FileStorage.ServiceHandler
 {
@@ -59,10 +59,9 @@ namespace SuperBike.Api.FileStorage.ServiceHandler
         {
             if (!Path.Exists(local)) Directory.CreateDirectory(Directory.GetParent(local).FullName);
 
-            using (var stream = new FileStream(local, FileMode.Create))
-            {
-                file.CopyTo(stream);
-            }
+            using var stream = new FileStream(local, FileMode.Create);
+
+            file.CopyTo(stream);
         }
     }
 }

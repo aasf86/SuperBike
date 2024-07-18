@@ -132,7 +132,8 @@ create table renter
     cnpjcpf varchar(14) not null unique,
     cnh varchar(11) not null unique,
     cnhtype varchar(2) not null,
-    cnhimg varchar(500) not null
+    cnhimg varchar(500) not null,
+    userid text not null unique references "AspNetUsers"("Id")
 );
 
 create table filedisk

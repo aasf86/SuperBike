@@ -21,4 +21,9 @@
 	<PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0" />	  
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SuperBike.Business\SuperBike.Business.csproj" />
+    <ProjectReference Include="..\SuperBike.Domain\SuperBike.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

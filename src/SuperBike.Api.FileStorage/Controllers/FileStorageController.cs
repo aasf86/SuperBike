@@ -1,11 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
-using SuperBike.Api.FileStorage.Dtos;
 using SuperBike.Api.FileStorage.ServiceHandler;
+using SuperBike.Business.Dtos.Renter;
 
 namespace SuperBike.Api.FileStorage.Controllers
 {
+    public static class Routes
+    {
+        public const string BaseUrlApi = "api/file-storage";
+        public static class Relative
+        {
+            public const string Download = "download/{key}";
+            public const string Upload = "upload";
+        }        
+    }
+
     [ApiController]
-    [Route("api/file-storage")]
+    [Route(Routes.BaseUrlApi)]
     public class FileStorageController : ControllerBase
     {
         private readonly ILogger<FileStorageController> _logger;
@@ -22,7 +32,7 @@ namespace SuperBike.Api.FileStorage.Controllers
             _fileManager = fileManager;
         }
 
-        [HttpGet("download/{key}")]
+        [HttpGet(Routes.Relative.Download)]
         public async Task<ActionResult> Download(string key)
         {
             try
@@ -34,7 +44,7 @@ namespace SuperBike.Api.FileStorage.Controllers
                     return File(System.IO.File.ReadAllBytes(fileDiskDb.LocalPath), fileDiskDb.ContentType, fileDiskDb.FileName);
                 }
                 
-                return NotFound("Item não localizadoa.");
+                return NotFound("Item não localizado.");
             }
             catch (Exception exc)
             {
@@ -43,7 +53,7 @@ namespace SuperBike.Api.FileStorage.Controllers
             }
         }
 
-        [HttpPost("upload")]
+        [HttpPost(Routes.Relative.Upload)]
         public async Task<ActionResult> Upload([FromForm] FileUpload file)
         {
             try
@@ -54,7 +64,9 @@ namespace SuperBike.Api.FileStorage.Controllers
                     fileDiskDb.FileName, 
                     fileDiskDb.ContentType, 
                     fileDiskDb.Length, 
-                    fileDiskDb.Inserted 
+                    fileDiskDb.Inserted,
+                    UrlPath = $"{Routes.BaseUrlApi}/{Routes.Relative.Download.Replace("{key}", fileDiskDb.Key)}",
+                    Host = $"{Request.Scheme}//{Request.Host.Value}"  
                 });
             }
             catch (Exception exc)
@@ -63,13 +75,5 @@ namespace SuperBike.Api.FileStorage.Controllers
                 return BadRequest("Houve um erro ao processar arquivo.");
             }
         }
-    }
-}
-
-namespace SuperBike.Api.FileStorage.Dtos
-{
-    public class FileUpload
-    {
-        public IFormFile File { get; set; }
     }
 }
