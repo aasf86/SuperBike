@@ -19,7 +19,7 @@ namespace SuperBike.Domain.Entities
             if (rentalPlan is null) throw new InvalidDataException(RentMsgDialog.RequiredRentalPlan);
             if (rentalDays <= 0) throw new InvalidDataException(RentMsgDialog.InvalidRentalDays);
 
-            MotorcyleId = motorcycleId;
+            MotorcycleId = motorcycleId;
             RenterId = renterId;
             RentalPlan = rentalPlan;
             RentalDays = rentalDays;
@@ -32,7 +32,7 @@ namespace SuperBike.Domain.Entities
         }
 
         public int RentalplanId { get { return RentalPlan.Id; } private set { RentalPlan.Id = value; } }
-        public int MotorcyleId { get; private set; }
+        public int MotorcycleId { get; private set; }
         public int RenterId { get; private set; }
         public int RentalDays { get; set; }
         public DateTime InitialDate { get; private set; }

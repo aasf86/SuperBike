@@ -12,7 +12,7 @@ namespace SuperBike.Business.Dtos.Rent
 
         [Required(ErrorMessage = RentMsgDialog.RequiredMotorcycle)]
         [Range(RentRule.DaysMinimal, int.MaxValue, ErrorMessage = RentMsgDialog.RequiredMotorcycle)]
-        public int MotorcyleId { get; set; }
+        public int MotorcycleId { get; set; }
 
         [Required(ErrorMessage = RentMsgDialog.RequiredRenter)]
         [Range(RentRule.DaysMinimal, int.MaxValue, ErrorMessage = RentMsgDialog.RequiredRenter)]
@@ -22,6 +22,8 @@ namespace SuperBike.Business.Dtos.Rent
         [Range(RentRule.DaysMinimal, int.MaxValue, ErrorMessage = RentMsgDialog.InvalidRentalDays)]
         public int RentalDays { get; set; }
 
-        public string UserId { get; set; }
+        public string? UserId { get; private set; } = "";
+
+        public void SetUser(string userId) => UserId = userId;
     }
 }

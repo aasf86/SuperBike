@@ -3,12 +3,10 @@ using SuperBike.Auth.Business;
 using SuperBike.Business.Contracts.UseCases.Rent;
 using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.Rent;
-using SuperBike.Business.UseCases;
 using SuperBike.Business.UseCases.Renter;
 using SuperBike.Domain.Contracts.Repositories.Rent;
 using System.Data;
 using static SuperBike.Domain.Entities.Rules.Rent;
-using static SuperBike.Domain.Entities.Rules.Renter;
 using Entity = SuperBike.Domain.Entities;
 
 namespace SuperBike.Business.UseCases.Rent
@@ -70,7 +68,7 @@ namespace SuperBike.Business.UseCases.Rent
                         return;
                     }
 
-                    var motocycleAvailable = await RentRepository.MotorcycleAvailable(rentInsert.MotorcyleId);
+                    var motocycleAvailable = await RentRepository.MotorcycleAvailable(rentInsert.MotorcycleId);
 
                     if (!motocycleAvailable)
                     {
@@ -79,7 +77,7 @@ namespace SuperBike.Business.UseCases.Rent
                     }
 
                     var rentEntity = new Entity.Rent(
-                        rentInsert.MotorcyleId,
+                        rentInsert.MotorcycleId,
                         rentInsert.RenterId,
                         rentalPlanFromDb,
                         rentInsert.RentalDays);

@@ -16,7 +16,7 @@ namespace SuperBike.Infrastructure.Repositories.Rent
         public async Task<bool> MotorcycleAvailable(int motorcycleId)
         {
             var sql = "select count(1) from rent where motorcycleId = @motorcycleId";
-            var flag = (await DbTransaction.Connection.QueryAsync<int>(sql, new { motorcycleId })).Count() == 0;
+            var flag = (await DbTransaction.Connection.ExecuteScalarAsync<int>(sql, new { motorcycleId })) == 0;
             return flag;
         }
     }

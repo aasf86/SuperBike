@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SuperBike.Business.Contracts.UseCases.Motorcycle;
+using SuperBike.Business.Contracts.UseCases.Rent;
 using SuperBike.Business.Contracts.UseCases.Renter;
 using SuperBike.Business.Contracts.UseCases.User;
 using SuperBike.Business.UseCases.Motorcycle;
+using SuperBike.Business.UseCases.Rent;
 using SuperBike.Business.UseCases.Renter;
 using SuperBike.Business.UseCases.User;
 
@@ -15,6 +17,7 @@ namespace SuperBike.Business.Config
             services.AddScoped<IUserUseCase, UserUseCase>();
             services.AddScoped<IMotorcycleUseCase, MotorcycleUseCase>();
             services.AddScoped<IRenterUseCase, RenterUseCase>();
+            services.AddScoped<IRentUseCase, RentUseCase>();            
 
             return services;
         }
