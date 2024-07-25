@@ -50,7 +50,7 @@ namespace SuperBike.Business.UseCases.Rent
                         InitialDate = x.InitialDate,
                         EndDate = x.EndDate,
                         EndPredictionDate = x.EndPredictionDate,
-                        TotalDaysOfRent = x.TotalDaysOfRent,
+                        DaysHavePassed = x.DaysHavePassed,
                         TotalRentalValue = x.TotalRentalValue(),
                         UserId = rentGet.UserId
                     }).ToList();

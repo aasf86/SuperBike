@@ -41,7 +41,7 @@ namespace SuperBike.Domain.Entities
         public DateTime EndPredictionDate { get; private set; }
 
         [NotMapped]
-        public int TotalDaysOfRent => (DateTime.Now - InitialDate).Days;
+        public int DaysHavePassed => (DateTime.Now - InitialDate).Days;
 
         [NotMapped]
         public RentalPlan RentalPlan { get; private set; }
@@ -55,7 +55,7 @@ namespace SuperBike.Domain.Entities
         {
             var totalDays = RentalDays;
 
-            if (TotalDaysOfRent > RentalDays) totalDays = TotalDaysOfRent;            
+            if (DaysHavePassed > RentalDays) totalDays = DaysHavePassed;            
 
             if (totalDays == RentalPlan.Days) return RentalPlan.TotalValue;
             if (totalDays < RentalPlan.Days) return RentalPlan.TotalValueOfDaysNotEffetived(totalDays);

@@ -1,13 +1,18 @@
-using SuperBike.Business.Dtos.Renter;
+﻿using SuperBike.Business.Dtos.Renter;
 using SuperBike.Domain.Entities;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SuperBike.Test
 {
-    public class UnitTestWorkSpace
+    public class UnitTestRenter
     {
         [Fact]
-        public void TestDomain()
+        public void Create_Renter_WithOut_Error_Validade()
         {
             Renter renterEntity = new Renter();
 
@@ -20,14 +25,14 @@ namespace SuperBike.Test
                 CNHImg = "Test",
                 CNHType = "A"
             };
-            
+
             var valid = new ValidationContext(renter);
             var valids = new List<ValidationResult>();
             var result = Validator.TryValidateObject(renter, valid, valids, true);
 
-            if (result) 
+            if (result)
             {
-                renterEntity = new Renter(renter.Name, renter.CnpjCpf, renter.DateOfBirth, renter.CNH, renter.CNHType, renter.CNHImg);
+                renterEntity = new Renter(renter.Name, renter.CnpjCpf, renter.DateOfBirth, renter.CNH, renter.CNHType, Guid.NewGuid().ToString(), renter.CNHImg);
             }
 
             Assert.True(renter.Name == renterEntity.Name);
@@ -36,7 +41,6 @@ namespace SuperBike.Test
             Assert.True(renter.DateOfBirth == renterEntity.DateOfBirth);
             Assert.True(renter.CNHImg == renterEntity.CNHImg);
             Assert.True(renter.CNHType == renterEntity.CNHType);
-
         }
     }
 }

@@ -32,7 +32,7 @@ namespace SuperBike.Business.Dtos.Rent
         /// <summary>
         /// Total de dias já passados desde o inicio do aluguel.
         /// </summary>
-        public int TotalDaysOfRent { get; set; }
+        public int DaysHavePassed { get; set; }
 
         /// <summary>
         /// Valor total do aluguel até a data atual.

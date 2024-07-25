@@ -103,8 +103,9 @@ namespace SuperBike.Business.UseCases.Motorcycle
         {
             try
             {
-                //aasf86 Authorize
-                //if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
+#if !DEBUG
+                if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
+#endif
 
                 "Iniciando [GetByPlate] de motocicleta: {Plate}".LogInf(motorcycleGetRequest.Data.Plate);                
 

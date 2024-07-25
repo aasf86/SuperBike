@@ -45,8 +45,6 @@ namespace SuperBike.Infrastructure.Repositories.Rent
                 },
                 filter as object)).ToList();
 
-
-
             return listResult;
         }
     }
