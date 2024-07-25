@@ -1,20 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
-using SuperBike.Business.Contracts.UseCases.Motorcycle;
 using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.Motorcycle;
-using SuperBike.Business.UseCases;
 using SuperBike.Business.UseCases.Motorcycle;
 using SuperBike.Domain.Contracts.Repositories.Motorcycle;
 using SuperBike.Domain.Contracts.Services;
-using SuperBike.Domain.Entities;
-using SuperBike.Infrastructure.Repositories.Motorcycle;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuperBike.Test
 {
