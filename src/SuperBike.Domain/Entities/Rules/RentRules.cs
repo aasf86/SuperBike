@@ -4,6 +4,9 @@
     {
         public static class RentRule
         {
+            public const int DaysMinimal = 1;
+
+            //aasf86
             /*
             public const int NameMinimalLenth = 3;
             public static string[] TypesCNHAllowed = ["A", "B", "AB"];
@@ -21,7 +24,10 @@
             public const string RequiredRenter = "Informe o alugador/entregador.";
             public const string RequiredRentalPlan = "Informe o plano de aluguel.";
             public const string InvalidRentalDays = "Informe uma quantidade de dia(s) válido.";
+            public const string NotRegistered = "Plano de aluguel não registrado.";
+            public const string AlreadyRented = "Motocicleta já está alugada, informe outra.";
 
+            //aasf86
             /*
             public const string InvalidName = "Informe o nome com mais de 2 caracteres.";
             public const string RequiredCnpjCpf = "Informe o CnpjCpf.";

@@ -4,7 +4,10 @@ using SuperBike.Domain.Entities.ValueObjects.Rent;
 namespace SuperBike.Test
 {
     public class UnitTestRent
-    {
+    {        
+        /// <summary>
+        /// valores serão definidos direto no banco de dados para o usuario configurar os planos de aluguel
+        /// </summary>
         private readonly RentalPlan _plan7Days  = new RentalPlan(07, 30m, 0.2m, 50);
         private readonly RentalPlan _plan15Days = new RentalPlan(15, 28m, 0.4m, 50);
         private readonly RentalPlan _plan30Days = new RentalPlan(30, 22m, 0.0m, 50);

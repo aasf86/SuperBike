@@ -1,11 +1,9 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SuperBike.Domain.Entities.ValueObjects.Rent
 {
     public class RentalPlan : EntityBase
     {
-        private readonly decimal _percentageOfDailyNotEffectived;
-        private readonly decimal _percentageValuePerDay;
         public RentalPlan() { }
 
         public RentalPlan(
@@ -15,8 +13,7 @@ namespace SuperBike.Domain.Entities.ValueObjects.Rent
             decimal valuePerDayExceeded)
         {
             Days = days;
-            ValuePerDay = valuePerDay;
-            //_percentageOfDailyNotEffectived = percentageOfDailyNotEffectived;
+            ValuePerDay = valuePerDay;            
             PercentageOfDailyNotEffectived = percentageOfDailyNotEffectived;
             ValuePerDayExceeded = valuePerDayExceeded;
         }
@@ -24,12 +21,14 @@ namespace SuperBike.Domain.Entities.ValueObjects.Rent
         public int Days { get; private set; }
         public decimal ValuePerDay { get; private set; }
         public decimal PercentageOfDailyNotEffectived { get; private set; }
-        /*{ 
-            get {  return _percentageOfDailyNotEffectived == 0 ? 1 : _percentageOfDailyNotEffectived; }            
-        }*/
         public decimal ValuePerDayExceeded { get; private set; }
+
+        [NotMapped]
         public decimal TotalValue => Days * ValuePerDay;
+
+        [NotMapped]
         public decimal PercentageValuePerDay => PercentageOfDailyNotEffectived * ValuePerDay;
+
         public decimal TotalValueOfDaysNotEffetived(int daysNotEffetived)
         {
             if (PercentageOfDailyNotEffectived > 0.0m) return ((Days - daysNotEffetived) * PercentageValuePerDay) + (daysNotEffetived * ValuePerDay);

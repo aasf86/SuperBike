@@ -6,7 +6,6 @@ namespace SuperBike.Infrastructure.Repositories.Renter
 {
     public class RenterRepository : WriteDataBase<Entity.Renter>, IRenterRepository
     {
-
         public async Task<Entity.Renter?> GetByCnpjCpf(string cnpjCpf)
         {
             var sql = Helpers.StrSql.CreateSqlSelect<Entity.Renter>("CnpjCpf = @CnpjCpf");

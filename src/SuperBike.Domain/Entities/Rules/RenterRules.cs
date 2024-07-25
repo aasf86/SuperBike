@@ -28,7 +28,7 @@
             public const string RequiredUserId = "Obrigatório usuário ao alugador/entregador.";
             public const string InvalidContentType = "Tipo de arquivo inválido.";
             public const string RequiredCNHImg = "Informe a imagem da CNH.";
-            public const string MotRegistered = "Alugador/entregador não registrado.";
+            public const string NotRegistered = "Alugador/entregador não registrado.";
         }        
     }
 }

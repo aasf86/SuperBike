@@ -149,3 +149,32 @@ create table filedisk
 );
 
 create index idx_filedisk_key on filedisk(key);
+
+create table rentalplan
+(
+	id bigserial not null primary key,
+    guid uuid DEFAULT gen_random_uuid(), 
+    inserted timestamp without time zone NOT NULL DEFAULT now(),
+    updated timestamp without time zone NOT NULL DEFAULT now(),
+
+    days int not null unique,
+    valueperday decimal not null,
+    PercentageOfDailyNotEffectived decimal not null,
+    ValuePerDayExceeded decimal not null
+);
+
+create table rent
+(
+	id bigserial not null primary key,
+    guid uuid DEFAULT gen_random_uuid(), 
+    inserted timestamp without time zone NOT NULL DEFAULT now(),
+    updated timestamp without time zone NOT NULL DEFAULT now(),
+    
+    rentalplanid bigint not null references rentalplan(id),
+    motorcycleid bigint not null references motorcycle(id),
+    renterid bigint not null references renter(id),
+    rentaldays int not null,
+    initialdate timestamp without time zone NOT NULL,
+    enddate timestamp without time zone NOT NULL,
+    endpredictiondate timestamp without time zone NOT NULL
+);

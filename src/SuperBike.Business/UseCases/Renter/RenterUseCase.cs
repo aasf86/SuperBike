@@ -20,7 +20,7 @@ namespace SuperBike.Business.UseCases.Renter
             IRenterRepository renterRepository,
             IDbConnection dbConnection) : base(logger, dbConnection)
         {
-            _renterRepository = renterRepository;            
+            _renterRepository = renterRepository;
             TransactionAssigner.Add(_renterRepository.SetTransaction);
         }
 
@@ -100,11 +100,10 @@ namespace SuperBike.Business.UseCases.Renter
                 "Erro no [Insert] alugador/entregador: {CnpjCpf}".LogErr(renterInsertRequest.Data.CnpjCpf);
                 exc.Message.LogErr(exc);
 
-                var motorcycleInsertResponse = ResponseBase.New(renterInsertRequest.Data, renterInsertRequest.RequestId);
-                motorcycleInsertResponse.Errors.Add(exc.Message);
-                return motorcycleInsertResponse;             
-            }
-            
+                var renterInsertResponse = ResponseBase.New(renterInsertRequest.Data, renterInsertRequest.RequestId);
+                renterInsertResponse.Errors.Add(exc.Message);
+                return renterInsertResponse;             
+            }            
         }
 
         public async Task<ResponseBase<RenterUpdate>> Update(RequestBase<RenterUpdate> renterUpdateRequest)
@@ -135,7 +134,7 @@ namespace SuperBike.Business.UseCases.Renter
 
                     if (renterFromDb is null) 
                     {
-                        renterUpdateResponse.Errors.Add(RenterMsgDialog.MotRegistered);
+                        renterUpdateResponse.Errors.Add(RenterMsgDialog.NotRegistered);
                         return;
                     }
 
@@ -152,9 +151,9 @@ namespace SuperBike.Business.UseCases.Renter
                 "Erro no [Update] alugador/entregador: {UserId}".LogErr(renterUpdateRequest.Data.UserId);
                 exc.Message.LogErr(exc);
 
-                var motorcycleInsertResponse = ResponseBase.New(renterUpdateRequest.Data, renterUpdateRequest.RequestId);
-                motorcycleInsertResponse.Errors.Add(exc.Message);
-                return motorcycleInsertResponse;
+                var renterInsertResponse = ResponseBase.New(renterUpdateRequest.Data, renterUpdateRequest.RequestId);
+                renterInsertResponse.Errors.Add(exc.Message);
+                return renterInsertResponse;
             }
         }
     }
