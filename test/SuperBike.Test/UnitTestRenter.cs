@@ -27,7 +27,14 @@ namespace SuperBike.Test
 
             if (result)
             {
-                renterEntity = new Renter(renter.Name, renter.CnpjCpf, renter.DateOfBirth, renter.CNH, renter.CNHType, Guid.NewGuid().ToString(), renter.CNHImg);
+                renterEntity = new Renter(
+                    renter.Name, 
+                    renter.CnpjCpf, 
+                    renter.DateOfBirth, 
+                    renter.CNH, 
+                    renter.CNHType, 
+                    Guid.NewGuid().ToString(), 
+                    renter.CNHImg);
             }
 
             Assert.True(renter.Name == renterEntity.Name);
