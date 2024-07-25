@@ -1,8 +1,6 @@
 using SuperBike.Business.Dtos.Renter;
-using static Dapper.SqlMapper;
-using SuperBike.Business.UseCases.Validators;
-using System.ComponentModel.DataAnnotations;
 using SuperBike.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace SuperBike.Test
 {
