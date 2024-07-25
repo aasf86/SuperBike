@@ -29,9 +29,10 @@ namespace SuperBike.Domain.Entities
             var endPredictionDate = InitialDate.AddDays(rentalDays);
             EndDate = new DateTime(endDate.Year, endDate.Month, endDate.Day);
             EndPredictionDate = new DateTime(endPredictionDate.Year, endPredictionDate.Month, endPredictionDate.Day);
+            RentalplanId = rentalPlan.Id;
         }
 
-        public int RentalplanId { get { return RentalPlan.Id; } private set { RentalPlan.Id = value; } }
+        public int RentalplanId { get; private set;  }
         public int MotorcycleId { get; private set; }
         public int RenterId { get; private set; }
         public int RentalDays { get; set; }
@@ -44,6 +45,11 @@ namespace SuperBike.Domain.Entities
 
         [NotMapped]
         public RentalPlan RentalPlan { get; private set; }
+
+        public void SetRentalPlan(RentalPlan plan)
+        {
+            RentalPlan = plan;
+        }
 
         public decimal TotalRentalValue()
         {

@@ -57,5 +57,26 @@ namespace SuperBike.Api.Controllers
 
             return BadRequest();
         }
+
+        /// <summary>
+        /// Obter os alugueis.
+        /// </summary>        
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var rentGet = new RentGet { UserId = User.FindAll(ClaimTypes.NameIdentifier).FirstOrDefault().Value };
+            var result = RentUseCase.Validate(rentGet);
+
+            if (!result.IsSuccess) return BadRequest(result);
+
+            var rentGetRequest = RequestBase.New(rentGet, "host:api", "1.0");
+            var rentGetResponse = await RentUseCase.Get(rentGetRequest);
+
+            if (rentGetResponse.IsSuccess && rentGetResponse.Data.Count() > 0)
+                return Ok(rentGetResponse);
+
+            return NotFound(rentGetResponse);            
+        }
     }
 }

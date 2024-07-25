@@ -24,9 +24,49 @@ namespace SuperBike.Business.UseCases.Rent
             _rentRepository = rentRepository;
             TransactionAssigner.Add(_rentRepository.SetTransaction);
         }
-        public async Task<ResponseBase<RentGet>> Get(RequestBase<RentGet> request)
+        public async Task<ResponseBase<List<RentGet>>> Get(RequestBase<RentGet> rentGetRequest)
         {
-            throw new NotImplementedException();
+            try
+            {
+#if !DEBUG
+                if (!IsInRole(RoleTypeSuperBike.RenterDeliveryman)) throw new UnauthorizedAccessException();
+#endif
+                "Inciando [Get] de aluguel: {UserId}".LogInf(rentGetRequest.Data.UserId);
+
+                var rentGet = rentGetRequest.Data;
+                var rentGetResponse = ResponseBase.New(new List<RentGet>(), rentGetRequest.RequestId);
+                var result = Validate(rentGet);
+
+                await UnitOfWorkExecute(async () =>
+                {
+                    var listRentFromDb = await RentRepository.GetAll(new { rentGet.UserId });
+                    rentGetResponse.Data = listRentFromDb.Select(x => new RentGet
+                    {
+                        Id = x.Id,
+                        RentalplanId = x.RentalplanId,
+                        MotorcycleId = x.MotorcycleId,
+                        RenterId = x.RenterId,
+                        RentalDays = x.RentalDays,
+                        InitialDate = x.InitialDate,
+                        EndDate = x.EndDate,
+                        EndPredictionDate = x.EndPredictionDate,
+                        TotalDaysOfRent = x.TotalDaysOfRent,
+                        TotalRentalValue = x.TotalRentalValue(),
+                        UserId = rentGet.UserId
+                    }).ToList();
+                });
+
+                return rentGetResponse;
+            }
+            catch (Exception exc)
+            {
+                "Erro no [Get] aluguel: {UserId}".LogErr(rentGetRequest.Data.UserId);
+                exc.Message.LogErr(exc);
+
+                var rentGetResponse = ResponseBase.New(new List<RentGet>(), rentGetRequest.RequestId);
+                rentGetResponse.Errors.Add(exc.Message);
+                return rentGetResponse;
+            }
         }
 
         public async Task<ResponseBase<RentInsert>> Insert(RequestBase<RentInsert> rentInsertRequest)
