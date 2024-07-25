@@ -39,7 +39,7 @@ namespace SuperBike.Business.UseCases.Motorcycle
                 if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
 #endif
 
-                "Inciando [Insert] de motocicleta: {Plate}".LogInf(motorcycleInsertRequest.Data.Plate);
+                "Iniciando [Insert] de motocicleta: {Plate}".LogInf(motorcycleInsertRequest.Data.Plate);
 
                 var motorcycleInsert = motorcycleInsertRequest.Data;
                 var motorcycleInsertResponse = ResponseBase.New(motorcycleInsert, motorcycleInsertRequest.RequestId);
@@ -106,7 +106,7 @@ namespace SuperBike.Business.UseCases.Motorcycle
                 //aasf86 Authorize
                 //if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
 
-                "Inciando [GetByPlate] de motocicleta: {Plate}".LogInf(motorcycleGetRequest.Data.Plate);                
+                "Iniciando [GetByPlate] de motocicleta: {Plate}".LogInf(motorcycleGetRequest.Data.Plate);                
 
                 var motorcycleGet = motorcycleGetRequest.Data;
                 var motorcycleGetResponse = ResponseBase.New(motorcycleGet, motorcycleGetRequest.RequestId);
@@ -157,7 +157,7 @@ namespace SuperBike.Business.UseCases.Motorcycle
                 if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
 #endif
 
-                "Inciando [Update] de motocicleta: {Plate}".LogInf(motorcycleUpdateRequest.Data.Plate);
+                "Iniciando [Update] de motocicleta: {Plate}".LogInf(motorcycleUpdateRequest.Data.Plate);
 
                 var motorcycleUpdate = motorcycleUpdateRequest.Data;
                 var motorcycleUpdateResponse = ResponseBase.New(motorcycleUpdate, motorcycleUpdateRequest.RequestId);
@@ -223,7 +223,7 @@ namespace SuperBike.Business.UseCases.Motorcycle
 #if !DEBUG
                 if (!IsInRole(RoleTypeSuperBike.Admin)) throw new UnauthorizedAccessException();
 #endif
-                "Inciando [Delete] de motocicleta: {Id}".LogInf(motorcycleDeleteRequest.Data.Id);
+                "Iniciando [Delete] de motocicleta: {Id}".LogInf(motorcycleDeleteRequest.Data.Id);
 
                 var motorcycleDelete = motorcycleDeleteRequest.Data;
                 var motorcycleDeleteResponse = ResponseBase.New(motorcycleDelete, motorcycleDeleteRequest.RequestId);

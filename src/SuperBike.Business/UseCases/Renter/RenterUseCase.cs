@@ -32,7 +32,7 @@ namespace SuperBike.Business.UseCases.Renter
                 if (!IsInRole(RoleTypeSuperBike.RenterDeliveryman)) throw new UnauthorizedAccessException();
 #endif
 
-                "Inciando [Insert] de alugador/entregador: {CnpjCpf}".LogInf(renterInsertRequest.Data.CnpjCpf);
+                "Iniciando [Insert] de alugador/entregador: {CnpjCpf}".LogInf(renterInsertRequest.Data.CnpjCpf);
 
                 var renterInsert = renterInsertRequest.Data;
                 var renterInsertResponse = ResponseBase.New(renterInsert, renterInsertRequest.RequestId);
@@ -114,7 +114,7 @@ namespace SuperBike.Business.UseCases.Renter
                 if (!IsInRole(RoleTypeSuperBike.RenterDeliveryman)) throw new UnauthorizedAccessException();
 #endif
 
-                "Inciando [Update] de imagem da CNH alugador/entregador UserId: {UserId}".LogInf(renterUpdateRequest.Data.UserId);
+                "Iniciando [Update] de imagem da CNH alugador/entregador UserId: {UserId}".LogInf(renterUpdateRequest.Data.UserId);
 
                 var renterUpdate = renterUpdateRequest.Data;
                 var renterUpdateResponse = ResponseBase.New(renterUpdate, renterUpdateRequest.RequestId);

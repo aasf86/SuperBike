@@ -31,7 +31,7 @@ namespace SuperBike.Business.UseCases.Rent
 #if !DEBUG
                 if (!IsInRole(RoleTypeSuperBike.RenterDeliveryman)) throw new UnauthorizedAccessException();
 #endif
-                "Inciando [Get] de aluguel: {UserId}".LogInf(rentGetRequest.Data.UserId);
+                "Iniciando [Get] de aluguel: {UserId}".LogInf(rentGetRequest.Data.UserId);
 
                 var rentGet = rentGetRequest.Data;
                 var rentGetResponse = ResponseBase.New(new List<RentGet>(), rentGetRequest.RequestId);
@@ -78,7 +78,7 @@ namespace SuperBike.Business.UseCases.Rent
                 if (!IsInRole(RoleTypeSuperBike.RenterDeliveryman)) throw new UnauthorizedAccessException();
 #endif
 
-                "Inciando [Insert] de Aluguel: {UserId}".LogInf(rentInsertRequest.Data.UserId);
+                "Iniciando [Insert] de Aluguel: {UserId}".LogInf(rentInsertRequest.Data.UserId);
 
                 var rentInsert = rentInsertRequest.Data;
                 var rentInsertResponse = ResponseBase.New(rentInsert, rentInsertRequest.RequestId);
