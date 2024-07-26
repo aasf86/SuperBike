@@ -32,7 +32,7 @@ Log.Information("Inicio SuperBike.Api.FileStorage: {Name}", Environment.UserName
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment()) //==> Deixei Swagger visivel para apresentação/demonstração
 {
     app.UseSwagger();
     app.UseSwaggerUI();

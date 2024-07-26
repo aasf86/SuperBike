@@ -1,6 +1,8 @@
 using Serilog;
 using SuperBike.Consumer.DataAccess;
 using SuperBike.Consumer.ServiceHandler;
+using SuperBike.Domain.Contracts.Services;
+using SuperBike.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<IConfigurationManager>(src => builder.Configuration);
 
 builder.Services.AddSingleton(src => FactoryDataAccess.CreateConnection(builder.Configuration.GetConnectionString("Default") ?? ""));
 builder.Services.AddSingleton<DataAccessEvent>();
@@ -31,7 +34,7 @@ Log.Information("Inicio SuperBike.Consumer: {Name}", Environment.UserName);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment()) //==> Deixei Swagger visivel para apresentação/demonstração
 {
     app.UseSwagger();
     app.UseSwaggerUI();
