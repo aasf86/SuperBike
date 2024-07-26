@@ -13,9 +13,9 @@ namespace SuperBike.Api.Controllers
     /// <summary>
     /// Controller para gestão de cadastros de alugueis de motocicletas.
     /// </summary>
-#if !DEBUG
+//#if !DEBUG
     [Authorize(Roles = RoleTypeSuperBike.RenterDeliveryman)]
-#endif
+//#endif
     [Route("api/[controller]")]
     [ApiController]
     public class RentController : ControllerBase
@@ -65,6 +65,8 @@ namespace SuperBike.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
+            if (User is not null) Thread.CurrentPrincipal = new ClaimsPrincipal(User.Identity);
+
             var rentGet = new RentGet { UserId = User.FindAll(ClaimTypes.NameIdentifier).FirstOrDefault().Value };
             var result = RentUseCase.Validate(rentGet);
 
