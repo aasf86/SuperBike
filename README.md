@@ -21,17 +21,17 @@ Uma vez construido o ambiente, na maquina hospedeira é possivel acessar os serv
     - SuperBike.Consumer: http://localhost:8083/swagger/index.html
         - *Responsável pelo consumo das mensagens enfileiradas no message broker*
     - SuperBike.Api.FileStorage: http://localhost:8082/swagger/index.html
-        - *Responsavel pela upload e download dos arquivos de imagem para a CNH*
+        - *Responsável pela upload e download dos arquivos de imagem para a CNH*
 
 - Ferramentas de infraestrutura
     - RabbitMQ: http://localhost:15672/#/
-        - *Responsavel pela gestão de fila*
+        - *Responsável pela gestão de fila*
     - Seq: http://localhost:81/#/
-        - *Responsavel pela gestão de logs da solução SuberBike*
+        - *Responsável pela gestão de logs da solução SuberBike*
     - PostgreSQL: port 5432
         - *Banco de dados relacional responsável pela retenção dos dados.*
 
-### Vamos a demonstração. *Consulte a espedificação da api aqui: http://localhost:8081/swagger/index.html*
+### Vamos a demonstração. *Consulte a especificação da api aqui: http://localhost:8081/swagger/index.html*
 Por padrão já temos um usuário Admin cadastrado para iniciar o cadastro de motocicletas.
 
 - 1 Fazer login como Admin:
