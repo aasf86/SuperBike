@@ -45,7 +45,7 @@ namespace SuperBike.Business.Dtos.Renter
             if(DateOfBirth > DateTime.Now)
                 yield return new ValidationResult(RenterMsgDialog.InvalidDateOfBirth, [nameof(DateOfBirth)]);
 
-            if (!RenterRule.TypesCNHAllowed.Contains(CNHType))
+            if (!RenterRule.CNHTypesAllowed.Contains(CNHType))
                 yield return new ValidationResult(RenterMsgDialog.InvalidCNHType, [nameof(CNHType)]);
 
             if (!long.TryParse(CNH, out result))

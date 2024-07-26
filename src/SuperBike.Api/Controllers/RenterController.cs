@@ -68,6 +68,8 @@ namespace SuperBike.Api.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (User is not null) Thread.CurrentPrincipal = new ClaimsPrincipal(User.Identity);
+
                 var renterUpdateRequest = RequestBase.New(renter, "host:api", "1.0");
                 renter.SetUser(User.FindAll(ClaimTypes.NameIdentifier).FirstOrDefault().Value);
 

@@ -33,7 +33,7 @@ namespace SuperBike.Domain.Entities
             if (string.IsNullOrEmpty(cnh)) throw new InvalidDataException(RenterMsgDialog.RequiredCNH);
             if (!long.TryParse(cnh, out result)) throw new InvalidDataException(RenterMsgDialog.InvalidCNH);
             if (string.IsNullOrEmpty(cnhType)) throw new InvalidDataException(RenterMsgDialog.RequiredCNHType);
-            if (!RenterRule.TypesCNHAllowed.Contains(cnhType)) throw new InvalidDataException(RenterMsgDialog.InvalidCNHType);
+            if (!RenterRule.CNHTypesAllowed.Contains(cnhType)) throw new InvalidDataException(RenterMsgDialog.InvalidCNHType);
             if (string.IsNullOrEmpty(userId)) throw new InvalidDataException(RenterMsgDialog.RequiredUserId);
 
             Name = name;

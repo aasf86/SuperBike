@@ -104,7 +104,11 @@ namespace SuperBike.Business.UseCases.User
                 exc.Message.LogErr(exc);
 
                 var userInsertResponse = ResponseBase.New(userInsertRequest.Data, userInsertRequest.RequestId);
+#if DEBUG
                 userInsertResponse.Errors.Add(exc.Message);
+#endif
+                userInsertResponse.Errors.Add("Erro ao inserir usuário.");
+
                 return userInsertResponse;
             }
 
@@ -143,7 +147,11 @@ namespace SuperBike.Business.UseCases.User
                 exc.Message.LogErr(exc);
 
                 var userLoginResponse = ResponseBase.New(userLoginRequest.Data, userLoginRequest.RequestId);
-                userLoginResponse.Errors.Add(exc.Message);                
+#if DEBUG
+                userLoginResponse.Errors.Add(exc.Message);
+#endif
+                userLoginResponse.Errors.Add("Erro login usuário.");
+
                 return userLoginResponse;
             }
             

@@ -94,7 +94,11 @@ namespace SuperBike.Business.UseCases.Motorcycle
                 exc.Message.LogErr(exc);
 
                 var motorcycleInsertResponse = ResponseBase.New(motorcycleInsertRequest.Data, motorcycleInsertRequest.RequestId);
+#if DEBUG
                 motorcycleInsertResponse.Errors.Add(exc.Message);
+#endif
+                motorcycleInsertResponse.Errors.Add("Erro ao inserir motocicleta.");
+
                 return motorcycleInsertResponse;
             }            
         }
@@ -145,7 +149,11 @@ namespace SuperBike.Business.UseCases.Motorcycle
                 exc.Message.LogErr(exc);
 
                 var motorcycleGetResponse = ResponseBase.New(motorcycleGetRequest.Data, motorcycleGetRequest.RequestId);
+#if DEBUG
                 motorcycleGetResponse.Errors.Add(exc.Message);
+#endif
+                motorcycleGetResponse.Errors.Add("Erro ao obter motocicleta.");
+
                 return motorcycleGetResponse;                
             }         
         }
@@ -212,7 +220,11 @@ namespace SuperBike.Business.UseCases.Motorcycle
                 exc.Message.LogErr(exc);
 
                 var motorcycleUpdateResponse = ResponseBase.New(motorcycleUpdateRequest.Data, motorcycleUpdateRequest.RequestId);
+#if DEBUG
                 motorcycleUpdateResponse.Errors.Add(exc.Message);
+#endif
+                motorcycleUpdateResponse.Errors.Add("Erro ao alterar motocicleta.");
+
                 return motorcycleUpdateResponse;                
             }
         }
@@ -251,7 +263,11 @@ namespace SuperBike.Business.UseCases.Motorcycle
                 exc.Message.LogErr(exc);
 
                 var motorcycleDeleteResponse = ResponseBase.New(motorcycleDeleteRequest.Data, motorcycleDeleteRequest.RequestId);
+#if DEBUG
                 motorcycleDeleteResponse.Errors.Add(exc.Message);
+#endif
+                motorcycleDeleteResponse.Errors.Add("Erro ao excluir motocicleta.");
+
                 return motorcycleDeleteResponse;
             }             
         }

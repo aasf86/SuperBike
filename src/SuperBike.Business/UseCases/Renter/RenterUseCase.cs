@@ -110,9 +110,9 @@ namespace SuperBike.Business.UseCases.Renter
         {
             try
             {
-#if !DEBUG
+//#if !DEBUG
                 if (!IsInRole(RoleTypeSuperBike.RenterDeliveryman)) throw new UnauthorizedAccessException();
-#endif
+//#endif
 
                 "Iniciando [Update] de imagem da CNH alugador/entregador UserId: {UserId}".LogInf(renterUpdateRequest.Data.UserId);
 
@@ -152,7 +152,11 @@ namespace SuperBike.Business.UseCases.Renter
                 exc.Message.LogErr(exc);
 
                 var renterInsertResponse = ResponseBase.New(renterUpdateRequest.Data, renterUpdateRequest.RequestId);
+#if DEBUG
                 renterInsertResponse.Errors.Add(exc.Message);
+#endif
+                renterInsertResponse.Errors.Add("Erro ao alterar alugador/entregador.");
+
                 return renterInsertResponse;
             }
         }

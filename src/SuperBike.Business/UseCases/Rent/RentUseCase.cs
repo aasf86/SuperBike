@@ -5,7 +5,9 @@ using SuperBike.Business.Dtos;
 using SuperBike.Business.Dtos.Rent;
 using SuperBike.Business.UseCases.Renter;
 using SuperBike.Domain.Contracts.Repositories.Rent;
+using SuperBike.Domain.Contracts.Repositories.Renter;
 using System.Data;
+using System.Linq;
 using static SuperBike.Domain.Entities.Rules.Rent;
 using Entity = SuperBike.Domain.Entities;
 
@@ -14,15 +16,21 @@ namespace SuperBike.Business.UseCases.Rent
     public class RentUseCase : UseCaseBase, IRentUseCase
     {
         private readonly IRentRepository _rentRepository;
+        private readonly IRenterRepository _renterRepository;
         private IRentRepository RentRepository => _rentRepository;
+        private IRenterRepository RenterRepository => _renterRepository;
 
         public RentUseCase(
             ILogger<RenterUseCase> logger,
             IRentRepository rentRepository,
-            IDbConnection dbConnection) : base(logger, dbConnection)
+            IDbConnection dbConnection,
+            IRenterRepository renterRepository) : base(logger, dbConnection)
         {
-            _rentRepository = rentRepository;
+            _rentRepository = rentRepository;            
+            _renterRepository = renterRepository;
+
             TransactionAssigner.Add(_rentRepository.SetTransaction);
+            TransactionAssigner.Add(_renterRepository.SetTransaction);
         }
         public async Task<ResponseBase<List<RentGet>>> Get(RequestBase<RentGet> rentGetRequest)
         {
@@ -64,14 +72,17 @@ namespace SuperBike.Business.UseCases.Rent
                 exc.Message.LogErr(exc);
 
                 var rentGetResponse = ResponseBase.New(new List<RentGet>(), rentGetRequest.RequestId);
+#if DEBUG
                 rentGetResponse.Errors.Add(exc.Message);
+#endif
+                rentGetResponse.Errors.Add("Erro ao obter aluguel");
+
                 return rentGetResponse;
             }
         }
 
         public async Task<ResponseBase<RentInsert>> Insert(RequestBase<RentInsert> rentInsertRequest)
         {
-
             try
             {
 #if !DEBUG
@@ -99,6 +110,14 @@ namespace SuperBike.Business.UseCases.Rent
                         rentInsertResponse.Errors.Add(msg);
                         msg.LogWrn();
                     });
+
+                    var renterFromDb = await RenterRepository.GetByUserId(rentInsert.UserId);
+
+                    if (!renterFromDb.CNHType.Contains(RentRule.CNHTypeAllowed, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        addErros(RentMsgDialog.CNHTypeNotAllowed);
+                        return;                        
+                    }
 
                     var rentalPlanFromDb = (await RentRepository.GetAllPlans()).SingleOrDefault(x => x.Id == rentInsert.RentalplanId);
 
@@ -136,7 +155,11 @@ namespace SuperBike.Business.UseCases.Rent
                 exc.Message.LogErr(exc);
 
                 var rentInsertResponse = ResponseBase.New(rentInsertRequest.Data, rentInsertRequest.RequestId);
+#if DEBUG
                 rentInsertResponse.Errors.Add(exc.Message);
+#endif
+                rentInsertResponse.Errors.Add("Erro ao inserir aluguel");
+
                 return rentInsertResponse;
             }
         }

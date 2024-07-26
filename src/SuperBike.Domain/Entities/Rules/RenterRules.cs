@@ -5,7 +5,7 @@
         public static class RenterRule
         {
             public const int NameMinimalLenth = 3;
-            public static string[] TypesCNHAllowed = ["A", "B", "AB"];
+            public static string[] CNHTypesAllowed = ["A", "B", "AB"];
             public const int CNHMinimalLenth = 11;
             public const int CNHMaxLenth = 11;
             public const int CnpjCpfMinimalLenth = 11;

@@ -58,7 +58,9 @@ services:
      POSTGRES_DB: superbikedb
      PGPORT: 5432
     volumes:
-     - pgdata-superbikedb:/var/lib/postgresql/data
+     #- pgdata-superbikedb:/var/lib/postgresql/data
+     - ./src/SuperBike.Infrastructure/ChangesDB/1.0.0/01_DDL.sql:/docker-entrypoint-initdb.d/01_DDL.sql
+     - ./src/SuperBike.Infrastructure/ChangesDB/1.0.0/02_DML.sql:/docker-entrypoint-initdb.d/02_DML.sql
     networks:
      netsuperbike:
 #</postgres>     
@@ -103,8 +105,8 @@ services:
     restart: unless-stopped     
 #</seq>
 
-volumes:
-  pgdata-superbikedb: {}
+#volumes:
+  #pgdata-superbikedb: {}
 
 networks:
   netsuperbike:

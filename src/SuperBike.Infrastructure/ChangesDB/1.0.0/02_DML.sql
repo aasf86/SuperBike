@@ -2,8 +2,8 @@
 insert into "AspNetRoles" values 
 (
 	'cea7c7dc-6934-4929-bd60-59cc8df3c18d', 
-	'Deliveryman', 
-	'DELIVERYMAN', 
+	'RenterDeliveryman', 
+	'RENTERDELIVERYMAN', 
 	null
 );
 
