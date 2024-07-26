@@ -36,9 +36,9 @@ namespace SuperBike.Business.UseCases.Rent
         {
             try
             {
-//#if !DEBUG
+#if !DEBUG
                 if (!IsInRole(RoleTypeSuperBike.RenterDeliveryman)) throw new UnauthorizedAccessException();
-//#endif
+#endif
                 "Iniciando [Get] de aluguel: {UserId}".LogInf(rentGetRequest.Data.UserId);
 
                 var rentGet = rentGetRequest.Data;

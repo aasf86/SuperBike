@@ -13,9 +13,9 @@ namespace SuperBike.Api.Controllers
     /// <summary>
     /// Controller para gestão de cadastros de alugueis de motocicletas.
     /// </summary>
-//#if !DEBUG
+#if !DEBUG
     [Authorize(Roles = RoleTypeSuperBike.RenterDeliveryman)]
-//#endif
+#endif
     [Route("api/[controller]")]
     [ApiController]
     public class RentController : ControllerBase
