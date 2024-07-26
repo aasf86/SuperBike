@@ -4,7 +4,7 @@ Solução para o desafio permitindo cadastrar motocicletas e aluguel para uso.
 ## 1º Clonar codigo fonte.
 Execute a seguinte linha de comando: *"necessário git cli"*
 ```cmd
-    git clone <url>
+    git clone https://github.com/aasf86/SuperBike
 ```
 ## 2º Construir ambiente
 No diretório raiz do projeto, executar a seguinte linha de comando: *"necessário docker"*
